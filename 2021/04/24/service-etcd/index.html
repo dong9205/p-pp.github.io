@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://hongker.github.io">
-  <title>设计模式 | Hongker的博客</title>
+  <title>服务化03-Etcd的服务注册与发现 | Hongker的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本篇文章主要介绍设计模式的相关概念。 什么是设计模式百度百科:  设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。  设计模式的作用使用设计模式是为了重用代码、让代码更容易被他人理解、保证代码可靠性。  设计">
-<meta name="keywords" content="设计模式">
+  <meta name="description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  服务注册与发现 服务注册A服务启动时，将当前服务运行的IP和Port提交到Etcd保存，key为ServiceA。 服务发现B服务需要调用A服务的接口时，去Etcd通过ServiceA这个key，找到存储的服务A的地址">
+<meta name="keywords" content="micro-service">
 <meta property="og:type" content="article">
-<meta property="og:title" content="设计模式">
-<meta property="og:url" content="https://hongker.github.io/2018/12/24/designMode/index.html">
+<meta property="og:title" content="服务化03-Etcd的服务注册与发现">
+<meta property="og:url" content="https://hongker.github.io/2021/04/24/service-etcd/index.html">
 <meta property="og:site_name" content="Hongker的博客">
-<meta property="og:description" content="本篇文章主要介绍设计模式的相关概念。 什么是设计模式百度百科:  设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。  设计模式的作用使用设计模式是为了重用代码、让代码更容易被他人理解、保证代码可靠性。  设计">
+<meta property="og:description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  服务注册与发现 服务注册A服务启动时，将当前服务运行的IP和Port提交到Etcd保存，key为ServiceA。 服务发现B服务需要调用A服务的接口时，去Etcd通过ServiceA这个key，找到存储的服务A的地址">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-04-22T22:57:00.345Z">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp">
+<meta property="og:updated_time" content="2021-04-24T00:12:34.652Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="设计模式">
-<meta name="twitter:description" content="本篇文章主要介绍设计模式的相关概念。 什么是设计模式百度百科:  设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。  设计模式的作用使用设计模式是为了重用代码、让代码更容易被他人理解、保证代码可靠性。  设计">
+<meta name="twitter:title" content="服务化03-Etcd的服务注册与发现">
+<meta name="twitter:description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  服务注册与发现 服务注册A服务启动时，将当前服务运行的IP和Port提交到Etcd保存，key为ServiceA。 服务发现B服务需要调用A服务的接口时，去Etcd通过ServiceA这个key，找到存储的服务A的地址">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp">
   
     <link rel="alternative" href="/atom.xml" title="Hongker的博客" type="application/atom+xml">
   
@@ -175,47 +177,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-designMode" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-service-etcd" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      设计模式
+      服务化03-Etcd的服务注册与发现
     </h1>
   
 
         
-        <a href="/2018/12/24/designMode/" class="archive-article-date">
-  	<time datetime="2018-12-24T12:31:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-24</time>
+        <a href="/2021/04/24/service-etcd/" class="archive-article-date">
+  	<time datetime="2021-04-23T22:48:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-24</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本篇文章主要介绍设计模式的相关概念。</p>
-<h2><span id="shi-me-shi-she-ji-mo-shi">什么是设计模式</span></h2><p>百度百科:</p>
-<blockquote>
-<p>设计模式（Design pattern）代表了最佳的实践，通常被有经验的面向对象的软件开发人员所采用。设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多软件开发人员经过相当长的一段时间的试验和错误总结出来的。</p>
+        <p>本文介绍如何通过etcd实现服务注册与发现。</p>
+<h2><span id="etcd">Etcd</span></h2><blockquote>
+<p>一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。</p>
 </blockquote>
-<h2><span id="she-ji-mo-shi-de-zuo-yong">设计模式的作用</span></h2><p>使用设计模式是为了重用代码、让代码更容易被他人理解、保证代码可靠性。 </p>
-<h2><span id="she-ji-yuan-ze">设计原则</span></h2><ul>
-<li>单一职责原则<br>  规定一个类应该只有一个发生变化的原因。</li>
-<li>开闭原则<br>  模块应对扩展开放，而对修改关闭。</li>
-<li>里氏替换原则<br>  如果调用的是父类的话，那么换成子类也完全可以运行。</li>
-<li>依赖反转原则<br>  指在软件里面，把父类都替换成它的子类，程序的行为没有变化。</li>
-<li>接口隔离原则<br>  每一个接口应该是一种角色，不多不少，不干不该干的事，该干的事都要干。</li>
-<li>聚合服用原则<br>  在一个新的对象里面使用一些已有的对象，使之成为新对象的一部分。</li>
+<h2><span id="fu-wu-zhu-ce-yu-fa-xian">服务注册与发现</span></h2><p><img src="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp" alt="service"></p>
+<h3><span id="fu-wu-zhu-ce">服务注册</span></h3><p>A服务启动时，将当前服务运行的<code>IP</code>和<code>Port</code>提交到Etcd保存，key为<code>ServiceA</code>。</p>
+<h3><span id="fu-wu-fa-xian">服务发现</span></h3><p>B服务需要调用A服务的接口时，去Etcd通过<code>ServiceA</code>这个key，找到存储的服务A的地址，即可发起调用。</p>
+<h2><span id="shi-xian">实现</span></h2><ul>
+<li>首先初始化etcd的客户端:<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	client <span class="string">"go.etcd.io/etcd/clientv3"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> cli *client.Client</span><br><span class="line"><span class="comment">// Connect 连接etcd</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Connect</span><span class="params">(endpoints []<span class="keyword">string</span>, timeout time.Duration)</span> <span class="params">(error)</span></span> &#123;</span><br><span class="line">	instance, err := client.New(client.Config&#123;</span><br><span class="line">		Endpoints:   endpoints,</span><br><span class="line">		DialTimeout: timeout,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	cli = instance</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">UseClient</span><span class="params">()</span> <span class="title">client</span>.<span class="title">KV</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> client.NewKV(cli)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
-<h2><span id="she-ji-mo-shi">设计模式</span></h2><p>设计模式分为三种类型，共23种。</p>
-<ul>
-<li>创建型模式：单例模式、抽象工厂模式、建造者模式、工厂模式、原型模式。</li>
-<li>结构型模式：适配器模式、桥接模式、装饰模式、组合模式、外观模式、享元模式、代理模式。</li>
-<li>行为型模式：模版方法模式、命令模式、迭代器模式、观察者模式、中介者模式、备忘录模式、解释器模式（Interpreter模式）、状态模式、策略模式、职责链模式(责任链模式)、访问者模式。</li>
-</ul>
-<p>后面的章节将细说每一种模式。代码实例统一采用PHP实现，请各位耐心的PHPer挨个看下去，代码质量取决于思想，而思想就靠设计模式来表达。</p>
 
       
 
@@ -255,7 +246,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">micro-service</a>
         		</li>
       		
 		</ul>
@@ -311,7 +302,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://hongker.github.io/2018/12/24/designMode/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongker.github.io/2021/04/24/service-etcd/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -325,18 +316,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/24/单例模式/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          单例模式
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/12/13/docker命令说明/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">docker命令说明</div>
+    <a href="/2021/04/22/golang-websocket-epoll/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Golang(27)-websocket进阶</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -375,7 +357,7 @@
 <script src="https://billts.site/js/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "https://hongker.github.io/2018/12/24/designMode/",
+  id: "https://hongker.github.io/2021/04/24/service-etcd/",
   owner: 'hongker',
   repo: 'hongker.github.io',
   oauth: {
