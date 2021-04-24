@@ -197,16 +197,17 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>本文介绍如何通过etcd实现服务注册与发现。</p>
-<h2><span id="etcd">Etcd</span></h2><blockquote>
+<h2 id="Etcd"><a href="#Etcd" class="headerlink" title="Etcd"></a>Etcd</h2><blockquote>
 <p>一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。</p>
 </blockquote>
-<h2><span id="fu-wu-zhu-ce-yu-fa-xian">服务注册与发现</span></h2><p><img src="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp" alt="service"></p>
-<h3><span id="fu-wu-zhu-ce">服务注册</span></h3><p>A服务启动时，将当前服务运行的<code>IP</code>和<code>Port</code>提交到Etcd保存，key为<code>ServiceA</code>。</p>
-<h3><span id="fu-wu-fa-xian">服务发现</span></h3><p>B服务需要调用A服务的接口时，去Etcd通过<code>ServiceA</code>这个key，找到存储的服务A的地址，即可发起调用。</p>
-<h2><span id="shi-xian">实现</span></h2><ul>
-<li>首先初始化etcd的客户端:<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	client <span class="string">"go.etcd.io/etcd/clientv3"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> cli *client.Client</span><br><span class="line"><span class="comment">// Connect 连接etcd</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Connect</span><span class="params">(endpoints []<span class="keyword">string</span>, timeout time.Duration)</span> <span class="params">(error)</span></span> &#123;</span><br><span class="line">	instance, err := client.New(client.Config&#123;</span><br><span class="line">		Endpoints:   endpoints,</span><br><span class="line">		DialTimeout: timeout,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	cli = instance</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">UseClient</span><span class="params">()</span> <span class="title">client</span>.<span class="title">KV</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> client.NewKV(cli)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-
+<h2 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a>服务注册与发现</h2><p><img src="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp" alt="service"></p>
+<h3 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h3><p>A服务启动时，将当前服务运行的<code>IP</code>和<code>Port</code>提交到Etcd保存，key为<code>ServiceA</code>。</p>
+<h3 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h3><p>B服务需要调用A服务的接口时，去Etcd通过<code>ServiceA</code>这个key，找到存储的服务A的地址，即可发起调用。</p>
+<h3 id="服务注销"><a href="#服务注销" class="headerlink" title="服务注销"></a>服务注销</h3><p>A服务现在要重启，就要在停止前主动注销。等待重启后再次注册即可。</p>
+<p>接下来我们来通过etcd实现：服务注册/服务发现/服务注销<br>
+        
+          <a class="article-more-a" href="/2021/04/24/service-etcd/#more">more >></a>
+        
       
 
       
@@ -1173,19 +1174,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">docker</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">kubernetes</a>
+                <a href="javascript:void(0)" class="js-tag color2">docker</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">micro-service</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">kubernetes</a>
               </li>
              
               <li class="article-tag-list-item">
