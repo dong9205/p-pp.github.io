@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="https://hongker.github.io">
   <title>服务化03-Etcd的服务注册与发现 | Hongker的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  服务注册与发现 服务注册A服务启动时，将当前服务运行的IP和Port提交到Etcd保存，key为ServiceA。 服务发现B服务需要调用A服务的接口时，去Etcd通过ServiceA这个key，找到存储的服务A的地址">
+  <meta name="description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  一致性算法raft节点的三种角色：  Leader: 负责接收客户端的请求，将日志复制到其他节点。 Candidate: 用于选举Leader的一种角色。 Follower: 普通节点，负责响应Leader和Candi">
 <meta name="keywords" content="micro-service">
 <meta property="og:type" content="article">
 <meta property="og:title" content="服务化03-Etcd的服务注册与发现">
 <meta property="og:url" content="https://hongker.github.io/2021/04/24/service-etcd/index.html">
 <meta property="og:site_name" content="Hongker的博客">
-<meta property="og:description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  服务注册与发现 服务注册A服务启动时，将当前服务运行的IP和Port提交到Etcd保存，key为ServiceA。 服务发现B服务需要调用A服务的接口时，去Etcd通过ServiceA这个key，找到存储的服务A的地址">
+<meta property="og:description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  一致性算法raft节点的三种角色：  Leader: 负责接收客户端的请求，将日志复制到其他节点。 Candidate: 用于选举Leader的一种角色。 Follower: 普通节点，负责响应Leader和Candi">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp">
-<meta property="og:updated_time" content="2021-04-24T13:50:38.008Z">
+<meta property="og:image" content="http://processon.com/chart_image/6084cf02637689195242cbff.png?_=1619390448374">
+<meta property="og:updated_time" content="2021-04-25T22:45:32.986Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务化03-Etcd的服务注册与发现">
-<meta name="twitter:description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  服务注册与发现 服务注册A服务启动时，将当前服务运行的IP和Port提交到Etcd保存，key为ServiceA。 服务发现B服务需要调用A服务的接口时，去Etcd通过ServiceA这个key，找到存储的服务A的地址">
-<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp">
+<meta name="twitter:description" content="本文介绍如何通过etcd实现服务注册与发现。 Etcd 一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。  一致性算法raft节点的三种角色：  Leader: 负责接收客户端的请求，将日志复制到其他节点。 Candidate: 用于选举Leader的一种角色。 Follower: 普通节点，负责响应Leader和Candi">
+<meta name="twitter:image" content="http://processon.com/chart_image/6084cf02637689195242cbff.png?_=1619390448374">
   
     <link rel="alternative" href="/atom.xml" title="Hongker的博客" type="application/atom+xml">
   
@@ -201,7 +201,13 @@
 <h2><span id="etcd">Etcd</span></h2><blockquote>
 <p>一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。</p>
 </blockquote>
-<h2><span id="fu-wu-zhu-ce-yu-fa-xian">服务注册与发现</span></h2><p><img src="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp" alt="service"></p>
+<h2><span id="yi-zhi-xing-suan-fa-raft">一致性算法raft</span></h2><p>节点的三种角色：</p>
+<ul>
+<li>Leader: 负责接收客户端的请求，将日志复制到其他节点。</li>
+<li>Candidate: 用于选举Leader的一种角色。</li>
+<li>Follower: 普通节点，负责响应Leader和Candidate节点的请求。</li>
+</ul>
+<h2><span id="fu-wu-zhu-ce-yu-fa-xian">服务注册与发现</span></h2><p><img src="http://processon.com/chart_image/6084cf02637689195242cbff.png?_=1619390448374" alt="service"></p>
 <h3><span id="fu-wu-zhu-ce">服务注册</span></h3><p>A服务启动时，将当前服务运行的<code>IP</code>和<code>Port</code>提交到Etcd保存，key为<code>ServiceA</code>。</p>
 <h3><span id="fu-wu-fa-xian">服务发现</span></h3><p>B服务需要调用A服务的接口时，去Etcd通过<code>ServiceA</code>这个key，找到存储的服务A的地址，即可发起调用。</p>
 <h3><span id="fu-wu-zhu-xiao">服务注销</span></h3><p>A服务现在要重启，就要在停止前主动注销。等待重启后再次注册即可。</p>

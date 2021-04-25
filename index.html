@@ -200,7 +200,13 @@
 <h2 id="Etcd"><a href="#Etcd" class="headerlink" title="Etcd"></a>Etcd</h2><blockquote>
 <p>一个高可用的分布式键值(key-value)数据库。etcd内部采用raft协议作为一致性算法，etcd基于Go语言实现。</p>
 </blockquote>
-<h2 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a>服务注册与发现</h2><p><img src="https://upload-images.jianshu.io/upload_images/5397496-d2afe8bb1544a0bf.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/994/format/webp" alt="service"></p>
+<h2 id="一致性算法raft"><a href="#一致性算法raft" class="headerlink" title="一致性算法raft"></a>一致性算法raft</h2><p>节点的三种角色：</p>
+<ul>
+<li>Leader: 负责接收客户端的请求，将日志复制到其他节点。</li>
+<li>Candidate: 用于选举Leader的一种角色。</li>
+<li>Follower: 普通节点，负责响应Leader和Candidate节点的请求。</li>
+</ul>
+<h2 id="服务注册与发现"><a href="#服务注册与发现" class="headerlink" title="服务注册与发现"></a>服务注册与发现</h2><p><img src="http://processon.com/chart_image/6084cf02637689195242cbff.png?_=1619390448374" alt="service"></p>
 <h3 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h3><p>A服务启动时，将当前服务运行的<code>IP</code>和<code>Port</code>提交到Etcd保存，key为<code>ServiceA</code>。</p>
 <h3 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h3><p>B服务需要调用A服务的接口时，去Etcd通过<code>ServiceA</code>这个key，找到存储的服务A的地址，即可发起调用。</p>
 <h3 id="服务注销"><a href="#服务注销" class="headerlink" title="服务注销"></a>服务注销</h3><p>A服务现在要重启，就要在停止前主动注销。等待重启后再次注册即可。</p>
