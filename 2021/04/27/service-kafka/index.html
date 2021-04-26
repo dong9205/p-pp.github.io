@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://hongker.github.io">
-  <title>Golang代码优化15-AOP(面向切面编程) | Hongker的博客</title>
+  <title>服务化04-消息队列kafka | Hongker的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="因为某些原因，触发了我要深入了解下AOP。     什么是AOP 核心概念 Go实现AOP    什么是AOP AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。扩展功能不修改源代码实现。  主要应用场景：日志记录，性能统计，安全控制，事务处理，异常处理等等。 核心概念 JoinPoint:连">
-<meta name="keywords" content="golang">
+  <meta name="description" content="本文介绍在微服务架构中，常用于服务与服务之间的异步通信组件kafka。 kafka Kafka是由Apache软件基金会开发的一个开源流处理平台，是一种高吞吐量的分布式发布订阅消息系统。  使用场景 在系统或应用程序之间构建可靠的用于传输实时数据的管道，消息队列功能 构建实时的流数据处理程序来变换或处理数据流，数据处理功能   通过docker部署kafka 首先需要安装zookeeper 1do">
+<meta name="keywords" content="micro-service">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Golang代码优化15-AOP(面向切面编程)">
-<meta property="og:url" content="https://hongker.github.io/2020/04/12/golang-aop/index.html">
+<meta property="og:title" content="服务化04-消息队列kafka">
+<meta property="og:url" content="https://hongker.github.io/2021/04/27/service-kafka/index.html">
 <meta property="og:site_name" content="Hongker的博客">
-<meta property="og:description" content="因为某些原因，触发了我要深入了解下AOP。     什么是AOP 核心概念 Go实现AOP    什么是AOP AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。扩展功能不修改源代码实现。  主要应用场景：日志记录，性能统计，安全控制，事务处理，异常处理等等。 核心概念 JoinPoint:连">
+<meta property="og:description" content="本文介绍在微服务架构中，常用于服务与服务之间的异步通信组件kafka。 kafka Kafka是由Apache软件基金会开发的一个开源流处理平台，是一种高吞吐量的分布式发布订阅消息系统。  使用场景 在系统或应用程序之间构建可靠的用于传输实时数据的管道，消息队列功能 构建实时的流数据处理程序来变换或处理数据流，数据处理功能   通过docker部署kafka 首先需要安装zookeeper 1do">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-04-22T22:57:00.349Z">
+<meta property="og:image" content="https://images2017.cnblogs.com/blog/760273/201711/760273-20171108181426763-1692750478.png">
+<meta property="og:updated_time" content="2021-04-26T23:56:31.431Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Golang代码优化15-AOP(面向切面编程)">
-<meta name="twitter:description" content="因为某些原因，触发了我要深入了解下AOP。     什么是AOP 核心概念 Go实现AOP    什么是AOP AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。扩展功能不修改源代码实现。  主要应用场景：日志记录，性能统计，安全控制，事务处理，异常处理等等。 核心概念 JoinPoint:连">
+<meta name="twitter:title" content="服务化04-消息队列kafka">
+<meta name="twitter:description" content="本文介绍在微服务架构中，常用于服务与服务之间的异步通信组件kafka。 kafka Kafka是由Apache软件基金会开发的一个开源流处理平台，是一种高吞吐量的分布式发布订阅消息系统。  使用场景 在系统或应用程序之间构建可靠的用于传输实时数据的管道，消息队列功能 构建实时的流数据处理程序来变换或处理数据流，数据处理功能   通过docker部署kafka 首先需要安装zookeeper 1do">
+<meta name="twitter:image" content="https://images2017.cnblogs.com/blog/760273/201711/760273-20171108181426763-1692750478.png">
   
     <link rel="alternative" href="/atom.xml" title="Hongker的博客" type="application/atom+xml">
   
@@ -175,51 +177,62 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-golang-aop" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-service-kafka" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Golang代码优化15-AOP(面向切面编程)
+      服务化04-消息队列kafka
     </h1>
   
 
         
-        <a href="/2020/04/12/golang-aop/" class="archive-article-date">
-  	<time datetime="2020-04-12T02:45:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-12</time>
+        <a href="/2021/04/27/service-kafka/" class="archive-article-date">
+  	<time datetime="2021-04-26T22:50:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>因为某些原因，触发了我要深入了解下AOP。</p>
-<div class="toc">
-
-<!-- toc -->
-<ul>
-<li><a href="#shi-me-shi-aop">什么是AOP</a></li>
-<li><a href="#he-xin-gai-nian">核心概念</a></li>
-<li><a href="#go-shi-xian-aop">Go实现AOP</a></li>
-</ul>
-<!-- tocstop -->
-<p></div></p>
-<h2><span id="shi-me-shi-aop">什么是AOP</span></h2><blockquote>
-<p>AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期间动态代理实现程序功能的统一维护的一种技术。扩展功能不修改源代码实现。</p>
+        <p>本文介绍在微服务架构中，常用于服务与服务之间的异步通信组件kafka。</p>
+<h2><span id="kafka">kafka</span></h2><blockquote>
+<p>Kafka是由Apache软件基金会开发的一个开源流处理平台，是一种高吞吐量的分布式发布订阅消息系统。</p>
 </blockquote>
-<p>主要应用场景：日志记录，性能统计，安全控制，事务处理，异常处理等等。</p>
-<h2><span id="he-xin-gai-nian">核心概念</span></h2><ul>
-<li>JoinPoint:连接点。是程序执行中的一个精确执行点，例如类中的一个方法。</li>
-<li>PointCut：切入点。指定哪些组件的哪些方法使用切面组件。</li>
-<li>Advice：通知，用于指定具体作用的位置，是方法之前或之后等等，分为前置通知，后置通知，异常通知，返回通知，环绕通知。</li>
-<li>Aspect: 切面。封装通用业务逻辑的组件，即我们想要插入的代码内容。</li>
+<h2><span id="shi-yong-chang-jing">使用场景</span></h2><ul>
+<li>在系统或应用程序之间构建可靠的用于传输实时数据的管道，消息队列功能</li>
+<li>构建实时的流数据处理程序来变换或处理数据流，数据处理功能</li>
 </ul>
-<p>其内在设计模式为代理模式。</p>
-<h2><span id="go-shi-xian-aop">Go实现AOP</span></h2><a id="more"></a>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// User </span></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name <span class="keyword">string</span></span><br><span class="line">	Pass <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Auth 验证</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *User)</span> <span class="title">Auth</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 实际业务逻辑</span></span><br><span class="line">	fmt.Printf(<span class="string">"register user:%s, use pass:%s\n"</span>, u.Name, u.Pass)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// UserAdvice </span></span><br><span class="line"><span class="keyword">type</span> UserAdvice <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// Before 前置通知</span></span><br><span class="line">    Before(user *User) error</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// After 后置通知</span></span><br><span class="line">	After(user *User)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ValidatePasswordAdvice 用户名验证</span></span><br><span class="line"><span class="keyword">type</span> ValidateNameAdvice <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ValidatePasswordAdvice 密码验证</span></span><br><span class="line"><span class="keyword">type</span> ValidatePasswordAdvice <span class="keyword">struct</span> &#123;</span><br><span class="line">	MinLength <span class="keyword">int</span></span><br><span class="line">	MaxLength <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ValidateNameAdvice)</span> <span class="title">Before</span><span class="params">(user *User)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"ValidateNameAdvice before"</span>)</span><br><span class="line">	<span class="keyword">if</span> user.Name == <span class="string">"admin"</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"admin can't be used"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ValidateNameAdvice)</span> <span class="title">After</span><span class="params">(user *User)</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"ValidateNameAdvice after"</span>)</span><br><span class="line">	fmt.Printf(<span class="string">"username:%s validate sucess\n"</span>, user.Name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Before 前置校验</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(advice ValidatePasswordAdvice)</span> <span class="title">Before</span><span class="params">(user *User)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"ValidatePasswordAdvice before"</span>)</span><br><span class="line">	<span class="keyword">if</span> user.Pass == <span class="string">"123456"</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"pass isn't strong"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(user.Pass) &gt; advice.MaxLength &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">"len of pass must less than:%d"</span>, advice.MaxLength)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(user.Pass) &lt; advice.MinLength &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">"len of pass must greater than:%d"</span>, advice.MinLength)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ValidatePasswordAdvice)</span> <span class="title">After</span><span class="params">(user *User)</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"ValidatePasswordAdvice after"</span>)</span><br><span class="line">	fmt.Printf(<span class="string">"password:%s validate sucess\n"</span>, user.Pass)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UserAdviceGroup,通知管理组</span></span><br><span class="line"><span class="keyword">type</span> UserAdviceGroup <span class="keyword">struct</span> &#123;</span><br><span class="line">	items []UserAdvice</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add 注入可选通知</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *UserAdviceGroup)</span> <span class="title">Add</span><span class="params">(advice UserAdvice)</span></span> &#123;</span><br><span class="line">	g.items = <span class="built_in">append</span>(g.items, advice)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *UserAdviceGroup)</span> <span class="title">Before</span><span class="params">(user *User)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> _, item := <span class="keyword">range</span> g.items &#123;</span><br><span class="line">		<span class="keyword">if</span> err := item.Before(user); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// After</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(g *UserAdviceGroup)</span> <span class="title">After</span><span class="params">(user *User)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> _, item := <span class="keyword">range</span> g.items &#123;</span><br><span class="line">		item.After(user)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// UserProxy 代理，也是切面</span></span><br><span class="line"><span class="keyword">type</span> UserProxy <span class="keyword">struct</span> &#123;</span><br><span class="line">	user *User</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewUser return UserProxy</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewUser</span><span class="params">(name, pass <span class="keyword">string</span>)</span> <span class="title">UserProxy</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> UserProxy&#123;user:&amp;User&#123;Name:name, Pass:pass&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Auth 校验，切入点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p UserProxy)</span> <span class="title">Auth</span><span class="params">()</span></span> &#123;</span><br><span class="line">	group := UserAdviceGroup&#123;&#125;</span><br><span class="line">	group.Add(&amp;ValidatePasswordAdvice&#123;MaxLength:<span class="number">10</span>, MinLength:<span class="number">6</span>&#125;)</span><br><span class="line">    group.Add(&amp;ValidateNameAdvice&#123;&#125;)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 前置通知</span></span><br><span class="line">	<span class="keyword">if</span> err := group.Before(p.user); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实际逻辑</span></span><br><span class="line">	p.user.Auth()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后置通知</span></span><br><span class="line">	group.After(p.user)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用AOP模式进行解耦，分离主业务与副业务。其实也就那样。</p>
+<p><img src="https://images2017.cnblogs.com/blog/760273/201711/760273-20171108181426763-1692750478.png" alt="image"></p>
+<h2><span id="tong-guo-docker-bu-shu-kafka">通过docker部署kafka</span></h2><ul>
+<li><p>首先需要安装zookeeper</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name zookeeper -p 2181:2181 -v /etc/localtime:/etc/localtime wurstmeister/zookeeper</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后启动kafka容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run  -d --name kafka -p 9092:9092 \</span><br><span class="line">-e KAFKA_BROKER_ID=0 \</span><br><span class="line">-e KAFKA_ZOOKEEPER_CONNECT=172.17.0.1:2181 \</span><br><span class="line">-e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://172.17.0.1:9092 \</span><br><span class="line"> -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 \</span><br><span class="line"> -t wurstmeister/kafka</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="shi-yong-kafka-go">使用kafka-go</span></h2><ul>
+<li><p>安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/segmentio/kafka-go</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>封装客户端</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"context"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/segmentio/kafka-go"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Client <span class="keyword">struct</span> &#123;</span><br><span class="line">	host <span class="keyword">string</span> <span class="comment">// kafka地址,一般是:localhost:9092</span></span><br><span class="line">	instance *kafka.Conn <span class="comment">// </span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Connect 连接kafka服务</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(client *Client)</span> <span class="title">Connect</span><span class="params">( topic <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	conn, err := kafka.DialLeader(context.Background(), <span class="string">"tcp"</span>, client.host, topic, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">"failed to dial learder: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	_ = conn.SetWriteDeadline(time.Now().Add(<span class="number">10</span>*time.Second))</span><br><span class="line"></span><br><span class="line">	client.instance = conn</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewClient 实例化</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewClient</span><span class="params">(host <span class="keyword">string</span>)</span> *<span class="title">Client</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Client&#123;host: host&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<a id="more"></a>
+<p>假设现在有个电商系统，分别有订单和仓库两个服务，当客户创建订单成功后，订单服务需要通知仓库发货，那么如下：</p>
+<ul>
+<li><p>订单服务(生产者)：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Producer 生产者</span></span><br><span class="line"><span class="keyword">type</span> Producer <span class="keyword">struct</span> &#123;</span><br><span class="line">	client *Client</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Send 发送信息</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(producer Producer)</span> <span class="title">Send</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="comment">// 通过kafka发送一条信息，通知发货</span></span><br><span class="line">	_, err := producer.client.instance.Write([]<span class="keyword">byte</span>(<span class="string">"new order created, please deliver goods"</span>))</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Errorf(<span class="string">"failed to write message: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>仓库服务(生产者)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> Consumer <span class="keyword">struct</span> &#123;</span><br><span class="line">	client *Client</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Receive 接收</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(consumer Consumer)</span> <span class="title">Receive</span><span class="params">()</span></span>  &#123;</span><br><span class="line">    <span class="comment">// 保持监听</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		message, err := consumer.client.instance.ReadMessage(<span class="number">10e3</span>) </span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			log.Println(<span class="string">"unable to read message:"</span>, err)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 接收到新消息</span></span><br><span class="line">        log.Println(<span class="string">"receive message:"</span>,<span class="keyword">string</span>( message.Value), message.Offset)</span><br><span class="line">        <span class="comment">// 模拟实际业务执行</span></span><br><span class="line">        time.Sleep(time.Second)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="kuo-zhan">扩展</span></h2><p>思考如何基于kafka实现异步事件。</p>
 
       
 
@@ -259,7 +272,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">micro-service</a>
         		</li>
       		
 		</ul>
@@ -315,7 +328,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://hongker.github.io/2020/04/12/golang-aop/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongker.github.io/2021/04/27/service-kafka/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -329,18 +342,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2020/04/12/service-register-discover/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          微服务02-服务注册与发现
-        
-      </div>
-    </a>
   
-  
-    <a href="/2020/04/11/golang-gc/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Golang代码优化14-垃圾回收</div>
+    <a href="/2021/04/26/algorithm-trie/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Go数据结构与算法(03)-字典树</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -379,7 +383,7 @@
 <script src="https://billts.site/js/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "https://hongker.github.io/2020/04/12/golang-aop/",
+  id: "https://hongker.github.io/2021/04/27/service-kafka/",
   owner: 'hongker',
   repo: 'hongker.github.io',
   oauth: {
