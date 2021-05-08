@@ -176,6 +176,110 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-algorithm-divide" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/09/algorithm-divide/">Go数据结构与算法(04)-分治算法</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/09/algorithm-divide/" class="archive-article-date">
+  	<time datetime="2021-05-08T21:44:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>算法思想主要有分治算法、回溯法、贪心算法、动态规划法等，本文介绍分治算法。</p>
+<h2><span id="ding-yi">定义</span></h2><blockquote>
+<p>将一个复杂的问题分成两个或更多个相同或相似的子问题，求得子问题的解，再合并就得到原问题的解。其核心思想是“分而治之”。</p>
+</blockquote>
+<h2><span id="ji-ben-si-lu">基本思路</span></h2><ul>
+<li>分：将一个问题分解成多个相似且足够小的子问题。</li>
+<li>治：通常通过递归的方式，对子问题进行求解。</li>
+<li>合并：将子问题的解合并得到原问题的解。</li>
+</ul>
+<h2><span id="dian-xing-suan-fa">典型算法</span></h2><h3><span id="kuai-su-pai-xu">快速排序</span></h3><ul>
+<li>算法描述<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.选择数组的第一个数作为基数，将后面的数与之比较，较小的放右边，较大的放左边，分成2个数组。</span><br><span class="line">2.通过递归的方式对上述两个数组再次拆分。</span><br><span class="line">3.直到无法拆分为止，整个数组就变成有序的数组。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>快速排序的时间复杂度是 <code>O(nlogn)</code>。</p>
+<ul>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// QuickSort 快速排序,left为数组的第一个下标，right为数组的最后一个下标</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">QuickSort</span><span class="params">(items []<span class="keyword">int</span>, left, right <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    low := left <span class="comment">// 临时变量,低位下标</span></span><br><span class="line">    high := right <span class="comment">// 临时变量，高位下标</span></span><br><span class="line">    <span class="keyword">if</span> low &gt;  high &#123; <span class="comment">// 无法再分，作为截止条件</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    flag := items[low] <span class="comment">// 设置基数，用于对比</span></span><br><span class="line">    <span class="keyword">for</span> low &lt; high &#123; <span class="comment">// 循环条件</span></span><br><span class="line">        <span class="keyword">for</span> low &lt; high &amp;&amp; items[high] &gt;= flag &#123; <span class="comment">// 从右往左遍历，直到发现比基数小的数</span></span><br><span class="line">            high--</span><br><span class="line">        &#125;</span><br><span class="line">        items[low] = items[high] <span class="comment">// 将较小的数放在低位地址</span></span><br><span class="line">        <span class="keyword">for</span> low &lt; high &amp;&amp; items[low] &lt;= flag &#123; <span class="comment">// 从左往右遍历，直到发现比基数大的数</span></span><br><span class="line">            low++</span><br><span class="line">        &#125;</span><br><span class="line">        items[high] = items[low] <span class="comment">// 将较大的树放在高位地址</span></span><br><span class="line">    &#125;</span><br><span class="line">    items[low] = flag <span class="comment">// 经过一轮遍历后，将基数赋值给低位地址，形成左边为比基数小的数组，右边为比基数大的数组</span></span><br><span class="line">    QuickSort(items, left, low<span class="number">-1</span>) <span class="comment">// 递归，分解</span></span><br><span class="line">    QuickSort(items, low+<span class="number">1</span>, right) <span class="comment">// 递归，分解</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    items := []<span class="keyword">int</span>&#123;<span class="number">5</span>,<span class="number">1</span>,<span class="number">3</span>,<span class="number">9</span>,<span class="number">8</span>,<span class="number">2</span>,<span class="number">6</span>,<span class="number">4</span>,<span class="number">7</span>&#125;</span><br><span class="line">    QuickSort(items, <span class="number">0</span>, <span class="built_in">len</span>(items)<span class="number">-1</span>)</span><br><span class="line">    fmt.Println(items)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3><span id="gui-bing-pai-xu">归并排序</span></h3><ul>
+<li><p>算法描述</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.分：将n个元素的序列分成n/2个子序列，每个子序列含两个元素。</span><br><span class="line">2.治：比较子序列，形成有序数组。</span><br><span class="line">3.合并：通过递归的方式，对两个数组进行排序并合并成一个数组。直到全部完成合并。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自顶向下归并排序，排序范围在[left,right)的数组</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MergeSort</span><span class="params">(items []<span class="keyword">int</span>, left, right <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">	<span class="comment">// 元素数量大于1时才进入递归</span></span><br><span class="line">	<span class="keyword">if</span> right - left &gt; <span class="number">1</span> &#123;</span><br><span class="line">		<span class="comment">// 将数组一分为二</span></span><br><span class="line">		middle := (left + right) / <span class="number">2</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">// 递归对左边的数组进行排序</span></span><br><span class="line">		MergeSort(items, left, middle)</span><br><span class="line">		<span class="comment">// 递归对右边的数组进行排序</span></span><br><span class="line">		MergeSort(items, middle, right)</span><br><span class="line">		<span class="comment">// 合并</span></span><br><span class="line">		merge(items, left, middle, right)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 归并</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(arr []<span class="keyword">int</span>, low, middle, high <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">	leftLen := middle-low <span class="comment">// 左数组的长</span></span><br><span class="line">	rightLen := high-middle <span class="comment">// 右数组的长</span></span><br><span class="line">	<span class="comment">// 使用临时数组来存储将要排序的元素</span></span><br><span class="line">	temp := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, leftLen+rightLen)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 遍历对比两个数组的每个元素</span></span><br><span class="line">	l, r := <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> l &lt; leftLen &amp;&amp; r &lt; rightLen&#123;</span><br><span class="line">		lValue := arr[low+l] <span class="comment">// 左边数组的元素</span></span><br><span class="line">        rValue := arr[middle+r] <span class="comment">// 右边数组的元素</span></span><br><span class="line">        <span class="comment">// 比较找到较小的，先放入临时数组</span></span><br><span class="line">		<span class="keyword">if</span> lValue &lt; rValue &#123;</span><br><span class="line">			temp = <span class="built_in">append</span>(temp, lValue)</span><br><span class="line">			l++</span><br><span class="line">		&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">			temp = <span class="built_in">append</span>(temp, rValue)</span><br><span class="line">			r++</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将剩下的元素追加到临时数组里</span></span><br><span class="line">	temp = <span class="built_in">append</span>(temp, arr[low + l:middle]...)</span><br><span class="line">	temp = <span class="built_in">append</span>(temp, arr[middle+r:high]...)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 此刻临时数组已变成有序的，将其元素复制到原数组里</span></span><br><span class="line">	<span class="keyword">for</span> idx, val := <span class="keyword">range</span> temp &#123;</span><br><span class="line">		arr[low+idx] = val</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="si-kao">思考</span></h2><p>该如何在实际环境中使用到这种分治思想呢？</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">algorithm</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/09/algorithm-divide/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-service-kafka" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -957,86 +1061,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/03/22/service-mongodb/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-golang-elasticsearch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/21/golang-elasticsearch/">Golang23-操作Elasticsearch</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/21/golang-elasticsearch/" class="archive-article-date">
-  	<time datetime="2021-03-21T14:34:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上一篇文章介绍了<a href="/2021/03/21/service-elasticsearch/">Elasticsearch集群</a>相关的知识，本文介绍如何通过golang去处理elasticsearch数据。</p>
-<h2><span id="an-zhuang">安装</span></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/olivere/elastic/v7</span><br></pre></td></tr></table></figure>
-<h2><span id="lian-jie-es">连接es</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/olivere/elastic/v7"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 连接</span></span><br><span class="line">	<span class="keyword">var</span> host  = <span class="string">"http://127.0.0.1:9200"</span></span><br><span class="line">	client, err := elastic.NewClient(elastic.SetURL(host), elastic.SetSniff(<span class="literal">false</span>))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"connect elasticsearch: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"connect success"</span>)</span><br><span class="line">	fmt.Println(client)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="chuang-jian-suo-yin">创建索引</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateIndex</span><span class="params">(client *elastic.Client)</span></span> &#123;</span><br><span class="line">    ctx := context.Background()</span><br><span class="line">	result, err := client.CreateIndex(<span class="string">"blog"</span>).Do(ctx)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"create index: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> !result.Acknowledged &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"create index failed"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"create index success"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="cha-ru-shu-ju">插入数据</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InsertDoc</span><span class="params">(client *elastic.Client)</span></span>  &#123;</span><br><span class="line">	indexName := <span class="string">"blog"</span></span><br><span class="line">	response, err := client.Index().Index(indexName).BodyJson(<span class="string">`&#123;"title":"hello","content":"world","created_at":1616381976&#125;`</span>).Do(ctx)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"insert document: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"insert document success,id: %s"</span>, response.Id)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="cha-xun">查询</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">QueryDoc</span><span class="params">(client *elastic.Client)</span></span>  &#123;</span><br><span class="line">	indexName := <span class="string">"blog"</span></span><br><span class="line">	boolQuery := elastic.NewTermQuery(<span class="string">"title"</span>, <span class="string">"hello"</span>)</span><br><span class="line"></span><br><span class="line">	searchResult, err := client.Search(indexName).Query(boolQuery).Do(context.Background())</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"query document: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"Query took %d milliseconds\n"</span>, searchResult.TookInMillis)</span><br><span class="line">	<span class="comment">// Number of hits</span></span><br><span class="line">	<span class="keyword">if</span> searchResult.Hits != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Found a total of %d tweets\n"</span>, searchResult.Hits.TotalHits.Value)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Iterate through results</span></span><br><span class="line">		<span class="keyword">for</span> _, hit := <span class="keyword">range</span> searchResult.Hits.Hits &#123;</span><br><span class="line">			<span class="comment">// hit.Index contains the name of the index</span></span><br><span class="line"></span><br><span class="line">			<span class="comment">// Deserialize hit.Source into a Tweet (could also be just a map[string]interface&#123;&#125;).</span></span><br><span class="line">			<span class="keyword">var</span> t <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">			err := json.Unmarshal(hit.Source, &amp;t)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="comment">// Deserialization failed</span></span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// Work with tweet</span></span><br><span class="line">			fmt.Printf(<span class="string">"id:%s, title: %s, content: %s\n"</span>, hit.Id, t[<span class="string">"title"</span>], t[<span class="string">"content"</span>])</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// No hits</span></span><br><span class="line">		fmt.Print(<span class="string">"Found no tweets\n"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>更多示例请查看：<code>https://pkg.go.dev/github.com/olivere/elastic</code></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/21/golang-elasticsearch/">展开全文 >></a>
         </p>
       
 

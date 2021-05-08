@@ -176,6 +176,86 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-golang-elasticsearch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/21/golang-elasticsearch/">Golang23-操作Elasticsearch</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/21/golang-elasticsearch/" class="archive-article-date">
+  	<time datetime="2021-03-21T14:34:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上一篇文章介绍了<a href="/2021/03/21/service-elasticsearch/">Elasticsearch集群</a>相关的知识，本文介绍如何通过golang去处理elasticsearch数据。</p>
+<h2><span id="an-zhuang">安装</span></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/olivere/elastic/v7</span><br></pre></td></tr></table></figure>
+<h2><span id="lian-jie-es">连接es</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/olivere/elastic/v7"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 连接</span></span><br><span class="line">	<span class="keyword">var</span> host  = <span class="string">"http://127.0.0.1:9200"</span></span><br><span class="line">	client, err := elastic.NewClient(elastic.SetURL(host), elastic.SetSniff(<span class="literal">false</span>))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"connect elasticsearch: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"connect success"</span>)</span><br><span class="line">	fmt.Println(client)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="chuang-jian-suo-yin">创建索引</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CreateIndex</span><span class="params">(client *elastic.Client)</span></span> &#123;</span><br><span class="line">    ctx := context.Background()</span><br><span class="line">	result, err := client.CreateIndex(<span class="string">"blog"</span>).Do(ctx)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"create index: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> !result.Acknowledged &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"create index failed"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"create index success"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="cha-ru-shu-ju">插入数据</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InsertDoc</span><span class="params">(client *elastic.Client)</span></span>  &#123;</span><br><span class="line">	indexName := <span class="string">"blog"</span></span><br><span class="line">	response, err := client.Index().Index(indexName).BodyJson(<span class="string">`&#123;"title":"hello","content":"world","created_at":1616381976&#125;`</span>).Do(ctx)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"insert document: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"insert document success,id: %s"</span>, response.Id)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="cha-xun">查询</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">QueryDoc</span><span class="params">(client *elastic.Client)</span></span>  &#123;</span><br><span class="line">	indexName := <span class="string">"blog"</span></span><br><span class="line">	boolQuery := elastic.NewTermQuery(<span class="string">"title"</span>, <span class="string">"hello"</span>)</span><br><span class="line"></span><br><span class="line">	searchResult, err := client.Search(indexName).Query(boolQuery).Do(context.Background())</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"query document: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"Query took %d milliseconds\n"</span>, searchResult.TookInMillis)</span><br><span class="line">	<span class="comment">// Number of hits</span></span><br><span class="line">	<span class="keyword">if</span> searchResult.Hits != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"Found a total of %d tweets\n"</span>, searchResult.Hits.TotalHits.Value)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Iterate through results</span></span><br><span class="line">		<span class="keyword">for</span> _, hit := <span class="keyword">range</span> searchResult.Hits.Hits &#123;</span><br><span class="line">			<span class="comment">// hit.Index contains the name of the index</span></span><br><span class="line"></span><br><span class="line">			<span class="comment">// Deserialize hit.Source into a Tweet (could also be just a map[string]interface&#123;&#125;).</span></span><br><span class="line">			<span class="keyword">var</span> t <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">			err := json.Unmarshal(hit.Source, &amp;t)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="comment">// Deserialization failed</span></span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// Work with tweet</span></span><br><span class="line">			fmt.Printf(<span class="string">"id:%s, title: %s, content: %s\n"</span>, hit.Id, t[<span class="string">"title"</span>], t[<span class="string">"content"</span>])</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// No hits</span></span><br><span class="line">		fmt.Print(<span class="string">"Found no tweets\n"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>更多示例请查看：<code>https://pkg.go.dev/github.com/olivere/elastic</code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/21/golang-elasticsearch/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-service-elasticsearch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -977,86 +1057,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/04/17/golang-spider/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-golang-websocket" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/17/golang-websocket/">Golang代码优化16-Websocket</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/17/golang-websocket/" class="archive-article-date">
-  	<time datetime="2020-04-17T05:49:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文介绍golang里使用websocket实现即时通讯。</p>
-<h2><span id="shi-me-shi-websocket">什么是websocket</span></h2><blockquote>
-<p>WebSocket使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。在WebSocket API中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建持久性的连接，并进行双向数据传输。</p>
-</blockquote>
-<h2><span id="an-zhuang-bao">安装包</span></h2><p>这是我封装好的包<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> get github.com/ebar-<span class="keyword">go</span>/ws</span><br></pre></td></tr></table></figure></p>
-<h2><span id="jian-dan-shi-li">简单示例</span></h2><p>基于gin启动websocket服务<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"github.com/ebar-go/ws"</span></span><br><span class="line">    <span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> m ws.Manager</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    m = ws.New()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// use gin router</span></span><br><span class="line">	router := gin.Default()</span><br><span class="line">	router.GET(<span class="string">"/ws"</span>, <span class="function"><span class="keyword">func</span><span class="params">(ctx *gin.Context)</span></span> &#123;</span><br><span class="line">		<span class="comment">// get websocket conn</span></span><br><span class="line">		conn, err := ws.GetUpgradeConnection(ctx.Writer, ctx.Request)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			http.NotFound(ctx.Writer, ctx.Request)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 指定客户端的消息处理方法</span></span><br><span class="line">		client := ws.NewConnection(conn, <span class="function"><span class="keyword">func</span><span class="params">(ctx *ws.Context)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">            <span class="comment">// 返回响应内容</span></span><br><span class="line">			<span class="keyword">return</span> ctx.GetMessage()</span><br><span class="line">        &#125;)</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// listen</span></span><br><span class="line">        <span class="keyword">go</span> client.Listen()</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// register connection</span></span><br><span class="line">		m.Register(client)</span><br><span class="line">        </span><br><span class="line">	&#125;)</span><br><span class="line">    <span class="comment">// start websocket service</span></span><br><span class="line">	<span class="keyword">go</span> m.Start()</span><br><span class="line"></span><br><span class="line">	_ = router.Run()    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2><span id="ce-shi">测试</span></h2><p>使用wscat测试websocket<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 安装</span><br><span class="line">npm install -g wscat</span><br><span class="line"></span><br><span class="line">// 建立连接</span><br><span class="line">wscat -c ws://localhost:8080</span><br><span class="line"></span><br><span class="line">// 发送请求</span><br><span class="line">&gt; hello</span><br><span class="line"></span><br><span class="line">// 收到的响应</span><br><span class="line">&lt; hello</span><br></pre></td></tr></table></figure></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/17/golang-websocket/">展开全文 >></a>
         </p>
       
 
