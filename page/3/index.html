@@ -176,6 +176,90 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-golang-spider" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/17/golang-spider/">Golang代码优化17-爬虫</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/17/golang-spider/" class="archive-article-date">
+  	<time datetime="2020-04-17T08:53:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍golang里也可以像python那样强大的使用爬虫。</p>
+<h2><span id="shi-me-shi-pa-chong">什么是爬虫</span></h2><blockquote>
+<p>网络爬虫（又称为网页蜘蛛，网络机器人，在FOAF社区中间，更经常的称为网页追逐者），是一种按照一定的规则，自动地抓取万维网信息的程序或者脚本。另外一些不常使用的名字还有蚂蚁、自动索引、模拟程序或者蠕虫。</p>
+</blockquote>
+<h2><span id="shuo-ming">说明</span></h2><p>爬虫在19年国家颁布《中华人民共和国网络安全法》里，明确指出了非法爬取数据的规定，此文章仅为学习讨论，合法学习并使用爬虫。</p>
+<h2><span id="pa-chong-kuang-jia">爬虫框架</span></h2><ul>
+<li>chromedb<br>无外部依赖，直接驱动支持chrome的DevTool协议的浏览器发起http请求</li>
+</ul>
+<p>安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/chromedb/chromedb</span><br></pre></td></tr></table></figure></p>
+<p>当然你的电脑上还需要安装chrome</p>
+<h2><span id="shi-li-demo">示例Demo</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"context"</span></span><br><span class="line">	<span class="string">"github.com/chromedp/chromedp"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// 如果是windows,出现以下错误时：</span></span><br><span class="line">	<span class="comment">// exec: "google-chrome": executable file not found in %PATH%</span></span><br><span class="line">	<span class="comment">// 需要通过下面方式指定运行环境</span></span><br><span class="line">	<span class="comment">// linux只要安装了chrome,一般不会出现这些问题</span></span><br><span class="line">	allocCtx, allocCancel := chromedp.NewExecAllocator(context.Background(), chromedp.ExecPath(<span class="string">"C:\\Users\\cx\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"</span>))</span><br><span class="line">	<span class="keyword">defer</span> allocCancel()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 如果是linux,可以直接使用chrome headless模式:</span></span><br><span class="line">	<span class="comment">// chromedp.NewContext(context.Background())</span></span><br><span class="line">	ctx, cancel := chromedp.NewContext(allocCtx)</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> res <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 运行</span></span><br><span class="line">	err := chromedp.Run(ctx,</span><br><span class="line">		<span class="comment">// 指定url</span></span><br><span class="line">		chromedp.Navigate(<span class="string">"https://segmentfault.com/questions"</span>),</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 通过指定标签页，获取html内容，并将内容写入res变量里</span></span><br><span class="line">		chromedp.Text(<span class="string">`div[class="copyright"]`</span>, &amp;res, chromedp.NodeVisible, chromedp.BySearch),</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	log.Println(strings.TrimSpace(res))</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/17/golang-spider/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-golang-websocket" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -949,92 +1033,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/04/01/golang-validator/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-golang-gin" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/01/golang-gin/">Golang代码优化10-gin</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/01/golang-gin/" class="archive-article-date">
-  	<time datetime="2020-04-01T13:50:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文介绍gin的一些知识点,如自定义Response,中间件等。</p>
-<h2 id="gin"><a href="#gin" class="headerlink" title="gin"></a>gin</h2><blockquote>
-<p>Gin 是一个 go 写的 web 框架，具有高性能的优点。</p>
-</blockquote>
-<p>初级的使用方式不介绍了，具体请查阅官方文档。官方地址：<code>https://github.com/gin-gonic/gin</code></p>
-<p>以下介绍基于gin开发项目的一些常用模块。</p>
-<h2 id="自定义Response"><a href="#自定义Response" class="headerlink" title="自定义Response"></a>自定义Response</h2><p>每个公司都会自定义接口的数据结构。故我们需要基于<code>Json()</code>自定义一个更方便好用的response<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Response 数据结构体</span></span><br><span class="line"><span class="keyword">type</span> Response <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// StatusCode 业务状态码</span></span><br><span class="line">	StatusCode <span class="keyword">int</span> <span class="string">`json:"status_code"`</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Message 提示信息</span></span><br><span class="line">	Message    <span class="keyword">string</span>      <span class="string">`json:"message"`</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Data 数据，用interface&#123;&#125;的目的是可以用任意数据</span></span><br><span class="line">	Data       <span class="keyword">interface</span>&#123;&#125; <span class="string">`json:"data"`</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Meta 源数据,存储如请求ID,分页等信息</span></span><br><span class="line">	Meta       Meta        <span class="string">`json:"meta"`</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Errors 错误提示，如 xx字段不能为空等</span></span><br><span class="line">	Errors     []ErrorItem <span class="string">`json:"errors"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Meta 元数据</span></span><br><span class="line"><span class="keyword">type</span> Meta <span class="keyword">struct</span> &#123;</span><br><span class="line">	RequestId      <span class="keyword">string</span>                 <span class="string">`json:"request_id"`</span></span><br><span class="line">	<span class="comment">// 还可以集成分页信息等</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// ErrorItem 错误项</span></span><br><span class="line"><span class="keyword">type</span> ErrorItem <span class="keyword">struct</span> &#123;</span><br><span class="line">	Key   <span class="keyword">string</span> <span class="string">`json:"key"`</span></span><br><span class="line">	Value <span class="keyword">string</span> <span class="string">`json:"error"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// New return response instance</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">()</span> *<span class="title">Response</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Response&#123;</span><br><span class="line">		StatusCode: <span class="number">200</span>,</span><br><span class="line">		Message:    <span class="string">""</span>,</span><br><span class="line">		Data:       <span class="literal">nil</span>,</span><br><span class="line">		Meta: Meta&#123;</span><br><span class="line">			RequestId: uuid.NewV4().String(),</span><br><span class="line">		&#125;,</span><br><span class="line">		Errors: []ErrorItem&#123;&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>封装gin.Context以自定义一些方便的方法<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Wrapper include context</span></span><br><span class="line"><span class="keyword">type</span> Wrapper <span class="keyword">struct</span> &#123;</span><br><span class="line">	ctx *gin.Context</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WrapContext</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WrapContext</span><span class="params">(ctx *gin.Context)</span> *<span class="title">Wrapper</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Wrapper&#123;ctx:ctx&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Json 输出json,支持自定义response结构体</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wrapper *Wrapper)</span> <span class="title">Json</span><span class="params">(response *Response)</span></span> &#123;</span><br><span class="line">	wrapper.ctx.JSON(<span class="number">200</span>, response)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Success 成功的输出</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wrapper *Wrapper)</span> <span class="title">Success</span><span class="params">( data <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	response := New()</span><br><span class="line">	response.Data = data</span><br><span class="line">	wrapper.Json(response)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Error 错误输出</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wrapper *Wrapper)</span> <span class="title">Error</span><span class="params">( statusCode <span class="keyword">int</span>, message <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	response := New()</span><br><span class="line">	response.StatusCode = statusCode</span><br><span class="line">	response.Message = message</span><br><span class="line">	wrapper.Json(response)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>使用：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	uuid <span class="string">"github.com/satori/go.uuid"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	router := gin.Default()</span><br><span class="line">	router.GET(<span class="string">"/"</span>, <span class="function"><span class="keyword">func</span><span class="params">(ctx *gin.Context)</span></span> &#123;</span><br><span class="line">		WrapContext(ctx).Success(<span class="string">"hello,world"</span>)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	router.Run(<span class="string">":8088"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>通过<code>go run main.go</code>运行后，浏览器访问<code>localhost:8088</code></p>
-<h2 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h2><p>介绍一些常用的中间件，如跨域、Jwt校验、请求日志等。<br>
-        
-          <a class="article-more-a" href="/2020/04/01/golang-gin/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/01/golang-gin/">展开全文 >></a>
         </p>
       
 

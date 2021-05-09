@@ -6,19 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://hongker.github.io">
-  <title>Archives: 2021 | Hongker的博客</title>
+  <title>Golang设计模式(01)-创造型模式 | Hongker的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="做喜欢做的事,不断提高自身的水平。">
-<meta name="keywords" content="go,php,docker,k8s,微服务,blockchain">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hongker的博客">
-<meta property="og:url" content="https://hongker.github.io/archives/2021/index.html">
+  <meta name="description" content="本文介绍设计模式里的创造型模式，以及在go里的实现方式。 定义 在软件工程中，创建型模式是处理对象创建的设计模式，试图根据实际情况使用合适的方式创建对象。基本的对象创建方式可能会导致设计上的问题，或增加设计的复杂度。创建型模式通过以某种方式控制对象的创建来解决问题。  主要的创造型模式包括：单例模式、工厂模式、抽象工厂模式、建造者模式、原型模式。下面就依次介绍这几种设计模式：">
+<meta name="keywords" content="设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang设计模式(01)-创造型模式">
+<meta property="og:url" content="https://hongker.github.io/2021/05/10/golang-design-model-build/index.html">
 <meta property="og:site_name" content="Hongker的博客">
-<meta property="og:description" content="做喜欢做的事,不断提高自身的水平。">
+<meta property="og:description" content="本文介绍设计模式里的创造型模式，以及在go里的实现方式。 定义 在软件工程中，创建型模式是处理对象创建的设计模式，试图根据实际情况使用合适的方式创建对象。基本的对象创建方式可能会导致设计上的问题，或增加设计的复杂度。创建型模式通过以某种方式控制对象的创建来解决问题。  主要的创造型模式包括：单例模式、工厂模式、抽象工厂模式、建造者模式、原型模式。下面就依次介绍这几种设计模式：">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://hongker.github.io/2021/05/10/golang-design-model-build/model.png">
+<meta property="og:image" content="https://hongker.github.io/2021/05/10/golang-design-model-build/AbstractFactory.png">
+<meta property="og:updated_time" content="2021-05-09T22:58:53.832Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hongker的博客">
-<meta name="twitter:description" content="做喜欢做的事,不断提高自身的水平。">
+<meta name="twitter:title" content="Golang设计模式(01)-创造型模式">
+<meta name="twitter:description" content="本文介绍设计模式里的创造型模式，以及在go里的实现方式。 定义 在软件工程中，创建型模式是处理对象创建的设计模式，试图根据实际情况使用合适的方式创建对象。基本的对象创建方式可能会导致设计上的问题，或增加设计的复杂度。创建型模式通过以某种方式控制对象的创建来解决问题。  主要的创造型模式包括：单例模式、工厂模式、抽象工厂模式、建造者模式、原型模式。下面就依次介绍这几种设计模式：">
+<meta name="twitter:image" content="https://hongker.github.io/2021/05/10/golang-design-model-build/model.png">
   
     <link rel="alternative" href="/atom.xml" title="Hongker的博客" type="application/atom+xml">
   
@@ -174,36 +178,145 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-golang-design-model-build" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/10/golang-design-model-build/" class="archive-article-date">
-  	<time datetime="2021-05-09T20:15:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-10</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/10/golang-design-model-build/">Golang设计模式(01)-创造型模式</a>
+    <h1 class="article-title" itemprop="name">
+      Golang设计模式(01)-创造型模式
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2021/05/10/golang-design-model-build/" class="archive-article-date">
+  	<time datetime="2021-05-09T20:15:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍设计模式里的创造型模式，以及在go里的实现方式。</p>
+<h2><span id="ding-yi">定义</span></h2><blockquote>
+<p>在软件工程中，创建型模式是处理对象创建的设计模式，试图根据实际情况使用合适的方式创建对象。基本的对象创建方式可能会导致设计上的问题，或增加设计的复杂度。创建型模式通过以某种方式控制对象的创建来解决问题。</p>
+</blockquote>
+<p>主要的创造型模式包括：单例模式、工厂模式、抽象工厂模式、建造者模式、原型模式。下面就依次介绍这几种设计模式：</p>
+<p><img src="model.png" alt="image"></p>
+<a id="more"></a>
+<h2><span id="dan-li-mo-shi">单例模式</span></h2><ul>
+<li><p>定义<br>无论获取多少次对象，都保证对象的初始化只会调用一次。</p>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>日志管理器，一般应用里只会存在一个日志管理器。</li>
+<li>对象连接池，比如数据库连接池，只会初始化一次。</li>
+<li>配置项，应用里一般只会初始化一个配置对象，用来读取、修改配置信息。</li>
+<li>以及其他在资源共享的情况下，需要避免初始化多个对象带来的损耗的情况。</li>
+</ul>
+</li>
+<li><p>实现<br>在golang里我们可以通过<code>sync.Once</code>来确保对象的初始化在运行过程中，只会调用一次。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"sync"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Container 全局容器接口</span></span><br><span class="line"><span class="keyword">type</span> Container <span class="keyword">interface</span>&#123;</span><br><span class="line">	<span class="comment">// Add 添加元素</span></span><br><span class="line">	Add(name <span class="keyword">string</span>, elem <span class="keyword">interface</span>&#123;&#125;)</span><br><span class="line">	<span class="comment">// Get 获取元素</span></span><br><span class="line">	Get(name <span class="keyword">string</span>) <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// MapContainer 基于map的container实现</span></span><br><span class="line"><span class="keyword">type</span> MapContainer <span class="keyword">struct</span> &#123;</span><br><span class="line">	once sync.Once</span><br><span class="line">	mu sync.RWMutex</span><br><span class="line">	elements <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// initialize 初始化</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(container *MapContainer)</span> <span class="title">initialize</span><span class="params">()</span></span> &#123;</span><br><span class="line">    log.Println(<span class="string">"initialize.."</span>)</span><br><span class="line">    <span class="comment">// ..或者其他什么业务逻辑</span></span><br><span class="line">	container.elements = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;, <span class="number">10</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Add 添加元素</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(container *MapContainer)</span> <span class="title">Add</span><span class="params">(name <span class="keyword">string</span>, elem <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	container.mu.Lock()</span><br><span class="line">	<span class="keyword">defer</span> container.mu.Unlock()</span><br><span class="line">	container.elements[name] = elem</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Get 获取元素</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(container *MapContainer)</span> <span class="title">Get</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	container.mu.RLock()</span><br><span class="line">	<span class="keyword">defer</span> container.mu.RUnlock()</span><br><span class="line">	<span class="keyword">return</span> container.elements[name]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> container = <span class="built_in">new</span>(MapContainer)</span><br><span class="line"><span class="comment">// GetContainer 获取全局容器的实例</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetContainer</span><span class="params">()</span> <span class="title">Container</span></span> &#123;</span><br><span class="line">	<span class="comment">// 使用once保证初始化只执行一次</span></span><br><span class="line">	container.once.Do(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		container.initialize()</span><br><span class="line">	&#125;)</span><br><span class="line">	<span class="keyword">return</span> container</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单元测试</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/stretchr/testify/assert"</span></span><br><span class="line">	<span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGetContainer</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 调用多次GetContainer()，依然只执行一次initialize()方法</span></span><br><span class="line">	GetContainer().Add(<span class="string">"number"</span>, <span class="number">1</span>)</span><br><span class="line">	GetContainer().Add(<span class="string">"float"</span>, <span class="number">1.4</span>)</span><br><span class="line">	assert.Equal(t, <span class="number">1</span>, GetContainer().Get(<span class="string">"number"</span>))</span><br><span class="line">	assert.Equal(t, <span class="number">1.4</span>, GetContainer().Get(<span class="string">"float"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="gong-han-mo-shi">工厂模式</span></h2><p>工厂模式有简单工厂模式和工厂方法模式。前者负责多个对象的创建，通过参数选择创建哪个对象，而后者是专门负责某个对象的创建过程。</p>
+<h3><span id="jian-dan-gong-han-mo-shi">简单工厂模式</span></h3><ul>
+<li><p>定义<br>简单工厂模式能够根据外界给定的信息，决定究竟应该创建哪个具体类的对象。解耦。</p>
+</li>
+<li><p>使用场景</p>
+</li>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LoggerType 日志管理器类型</span></span><br><span class="line"><span class="keyword">type</span> LoggerType <span class="keyword">uint</span></span><br><span class="line"><span class="keyword">const</span>(</span><br><span class="line">    <span class="comment">// 文件类型</span></span><br><span class="line">    File LoggerType = <span class="literal">iota</span> + <span class="number">1</span></span><br><span class="line">    <span class="comment">// 数据库类型</span></span><br><span class="line">	DB </span><br><span class="line">)</span><br><span class="line"><span class="comment">// Logger 日志管理器</span></span><br><span class="line"><span class="keyword">type</span> Logger <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// Write 写日志</span></span><br><span class="line">	Write()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// FileLogger 文件日志管理器</span></span><br><span class="line"><span class="keyword">type</span> FileLogger <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="comment">// Write 写入文件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(logger FileLogger)</span> <span class="title">Write</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"write to file..."</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DBLogger 数据库日志管理器</span></span><br><span class="line"><span class="keyword">type</span> DBLogger <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="comment">// Write 写入数据库</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(logger DBLogger)</span> <span class="title">Write</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"write to database..."</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// LoggerSampleFactory 简单工厂类</span></span><br><span class="line"><span class="keyword">type</span> LoggerSimpleFactory <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="comment">// Create 创建</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory LoggerSimpleFactory)</span> <span class="title">Create</span><span class="params">(loggerType LoggerType)</span> <span class="title">Logger</span></span>&#123;</span><br><span class="line">	<span class="keyword">var</span> logger Logger</span><br><span class="line">	<span class="keyword">switch</span> loggerType &#123;</span><br><span class="line">	<span class="keyword">case</span> File:</span><br><span class="line">		logger = <span class="built_in">new</span>(FileLogger)</span><br><span class="line">	<span class="keyword">case</span> DB:</span><br><span class="line">		logger = <span class="built_in">new</span>(DBLogger)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> logger</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// NewFactory </span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFactory</span><span class="params">()</span> *<span class="title">LoggerSimpleFactory</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(LoggerSimpleFactory)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>UnitTest</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestNewFactory</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	factory := NewFactory()</span><br><span class="line">	fileLogger := factory.Create(File)</span><br><span class="line">    fileLogger.Write()</span><br><span class="line">    </span><br><span class="line">    dbLogger := factory.Create(DB)</span><br><span class="line">    dbLogger.Write()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3><span id="gong-han-fang-fa-mo-shi">工厂方法模式</span></h3><ul>
+<li><p>定义<br>工厂方法模式是简单工厂模式的衍生，解决了许多简单工厂模式的问题。首先完全实现‘开－闭 原则’，实现了可扩展。其次更复杂的层次结构，可以应用于产品结果复杂的场合。</p>
+</li>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LoggerFactory 日志管理器的工厂接口</span></span><br><span class="line"><span class="keyword">type</span> LoggerFactory <span class="keyword">interface</span> &#123;</span><br><span class="line">	Create() Logger</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> FileLoggerFactory <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory FileLoggerFactory)</span> <span class="title">Create</span><span class="params">()</span> <span class="title">Logger</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(FileLogger)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> DBLoggerFactory <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory DBLoggerFactory)</span> <span class="title">Create</span><span class="params">()</span> <span class="title">Logger</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(DBLogger)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFileLoggerFactory</span><span class="params">()</span> <span class="title">LoggerFactory</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(FileLoggerFactory)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewDBLoggerFactory</span><span class="params">()</span> <span class="title">LoggerFactory</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(FileLoggerFactory)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="chou-xiang-gong-han-mo-shi">抽象工厂模式</span></h2><ul>
+<li><p>定义<br>为创建一组相关或相互依赖的对象提供一个接口，而且无需指定他们的具体类。它与工厂模式的区别在于它是创建多种对象的集合。</p>
+</li>
+<li><p>UML<br><img src="AbstractFactory.png" alt="image"></p>
+</li>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CompanyFactory Company的工厂接口</span></span><br><span class="line"><span class="keyword">type</span> CompanyFactory <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// CreateEmployee 新增一个职员</span></span><br><span class="line">    CreateEmployee() Employee</span><br><span class="line">    <span class="comment">// CreateDepartment 新增一个部门</span></span><br><span class="line">	CreateDepartment(name <span class="keyword">string</span>) Department</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Employee 职员接口</span></span><br><span class="line"><span class="keyword">type</span> Employee <span class="keyword">interface</span> &#123;</span><br><span class="line">	Work()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Department 部门接口</span></span><br><span class="line"><span class="keyword">type</span> Department <span class="keyword">interface</span> &#123;</span><br><span class="line">	Name() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// --------------具体实现----------------</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// AppleEmployee apple公司的职员</span></span><br><span class="line"><span class="keyword">type</span> AppleEmployee <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(employee AppleEmployee)</span> <span class="title">Work</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"apple employee working.."</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// AppleDepartment apple公司的部门</span></span><br><span class="line"><span class="keyword">type</span> AppleDepartment <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(department AppleDepartment)</span> <span class="title">Name</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"apple:%s"</span>, department.name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AppleFactory apple工厂类</span></span><br><span class="line"><span class="keyword">type</span> AppleFactory <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory AppleFactory)</span> <span class="title">CreateEmployee</span><span class="params">()</span> <span class="title">Employee</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;AppleEmployee&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory AppleFactory)</span> <span class="title">CreateDepartment</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">Department</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;AppleDepartment&#123;name: name&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// GoogleEmployee google公司的职员</span></span><br><span class="line"><span class="keyword">type</span> GoogleEmployee <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(employee GoogleEmployee)</span> <span class="title">Work</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"google employee working.."</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// GoogleDepartment google公司的部门</span></span><br><span class="line"><span class="keyword">type</span> GoogleDepartment <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(department GoogleDepartment)</span> <span class="title">Name</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"google:%s"</span>, department.name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// google工厂类</span></span><br><span class="line"><span class="keyword">type</span> GoogleFactory <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory GoogleFactory)</span> <span class="title">CreateEmployee</span><span class="params">()</span> <span class="title">Employee</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;GoogleEmployee&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(factory GoogleFactory)</span> <span class="title">CreateDepartment</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">Department</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;GoogleDepartment&#123;name: name&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单元测试</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TestAppleFactory 测试apple工厂类</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestAppleFactory</span><span class="params">(t *testing.T)</span></span>  &#123;</span><br><span class="line">	factory := <span class="built_in">new</span>(AppleFactory)</span><br><span class="line">	employee := factory.CreateEmployee()</span><br><span class="line">	employee.Work()</span><br><span class="line">	department := factory.CreateDepartment(<span class="string">"dep01"</span>)</span><br><span class="line">	fmt.Println(department.Name())</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TestGoogleFactory 测试google工厂类</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestGoogleFactory</span><span class="params">(t *testing.T)</span></span>  &#123;</span><br><span class="line">	factory := <span class="built_in">new</span>(GoogleFactory)</span><br><span class="line">	employee := factory.CreateEmployee()</span><br><span class="line">	employee.Work()</span><br><span class="line">	department := factory.CreateDepartment(<span class="string">"dep01"</span>)</span><br><span class="line">	fmt.Println(department.Name())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="jian-zao-zhe-mo-shi">建造者模式</span></h2><ul>
+<li><p>定义<br>当一个类的构造函数参数个数超过4个，而且这些参数有些是可选的参数，考虑使用构造者模式。</p>
+</li>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Person 初始化该类时，有两个属性必填，两个属性选填</span></span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span> <span class="comment">// 必填</span></span><br><span class="line">	sex <span class="keyword">string</span> <span class="comment">// 必填</span></span><br><span class="line">	age <span class="keyword">int</span> <span class="comment">// 选填</span></span><br><span class="line">	birthday <span class="keyword">string</span> <span class="comment">// 选填</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(person Person)</span> <span class="title">Info</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"名字:%s, 性别：%s,年龄：%d,生日：%s\n"</span>, person.name, person.sex, person.age, person.birthday)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// PersonBuilder Person的Builder接口，其中主要为Person的选填属性的setter方法</span></span><br><span class="line"><span class="keyword">type</span> PersonBuilder <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// SetAge 设置年龄</span></span><br><span class="line">    SetAge(age <span class="keyword">int</span>) *Builder</span><br><span class="line">    <span class="comment">// SetBirthday 设置生日</span></span><br><span class="line">    SetBirthday(birthday <span class="keyword">string</span>) *Builder</span><br><span class="line">    <span class="comment">// Build 创建Person对象</span></span><br><span class="line">	Build() Person</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Builder PersonBuilder接口的实现类</span></span><br><span class="line"><span class="keyword">type</span> Builder <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	sex <span class="keyword">string</span></span><br><span class="line">	age <span class="keyword">int</span></span><br><span class="line">	birthday <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(builder *Builder)</span> <span class="title">SetAge</span><span class="params">(age <span class="keyword">int</span>)</span> *<span class="title">Builder</span></span> &#123;</span><br><span class="line">	builder.age = age</span><br><span class="line">	<span class="keyword">return</span> builder</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(builder *Builder)</span> <span class="title">SetBirthday</span><span class="params">(birthday <span class="keyword">string</span>)</span> *<span class="title">Builder</span></span> &#123;</span><br><span class="line">	builder.birthday = birthday</span><br><span class="line">	<span class="keyword">return</span> builder</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewBuilder 构造一个builder</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBuilder</span><span class="params">(name, sex <span class="keyword">string</span>)</span> <span class="title">PersonBuilder</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Builder&#123;name: name, sex: sex&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Build 生成Person实例</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(builder *Builder)</span> <span class="title">Build</span><span class="params">()</span> <span class="title">Person</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> Person&#123;</span><br><span class="line">		name:     builder.name,</span><br><span class="line">		sex:      builder.sex,</span><br><span class="line">		age:      builder.age,</span><br><span class="line">		birthday: builder.birthday,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单元测试</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestNewBuilder</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	person := NewBuilder(<span class="string">"张三"</span>, <span class="string">"男"</span>).</span><br><span class="line">		SetAge(<span class="number">26</span>).</span><br><span class="line">		SetBirthday(<span class="string">"1994/01/01"</span>).</span><br><span class="line">		Build()</span><br><span class="line"></span><br><span class="line">	person.Info()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="yuan-xing-mo-shi">原型模式</span></h2><ul>
+<li><p>定义<br>用原型实例指定创建对象的种类，并且通过这些原型创建新的对象，这种行为成为拷贝(克隆)。</p>
+</li>
+<li><p>拷贝方式<br>拷贝分浅拷贝和深拷贝两种方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">浅拷贝：更改拷贝项中的指针或引用对象，源自同一个原型的全部的克隆对象都会受到影响</span><br><span class="line">深拷贝：重新申请内存空间，更改拷贝项中的指针或引用对象，不会影响其他克隆对象</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用场景<br>在实例化对象比较复杂繁琐、成本较大的时候，可以选择原型模式，克隆已有的对象，简化创建过程，提高效率。</p>
+</li>
+<li><p>实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name <span class="keyword">string</span></span><br><span class="line">	Books []<span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Clone 拷贝原型对象</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(student *Student)</span> <span class="title">Clone</span><span class="params">()</span> *<span class="title">Student</span></span> &#123;</span><br><span class="line">	<span class="comment">// 浅拷贝:更改拷贝项中的指针或引用对象，源自同一个原型的全部的克隆对象都会受到影响</span></span><br><span class="line">	<span class="keyword">return</span> student</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DeepClone 深拷贝：重新申请内存空间，更改拷贝项中的指针或引用对象，不会影响其他克隆对象</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(student *Student)</span> <span class="title">DeepClone</span><span class="params">()</span> *<span class="title">Student</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	books := <span class="built_in">make</span>([]<span class="keyword">string</span>, <span class="number">0</span>, <span class="built_in">len</span>(student.Books))</span><br><span class="line">	<span class="keyword">for</span> _, book := <span class="keyword">range</span> student.Books &#123;</span><br><span class="line">		books = <span class="built_in">append</span>(books, book)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> &amp;Student&#123;</span><br><span class="line">		Name:  student.Name,</span><br><span class="line">		Books: student.Books,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单元测试</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TestStudent_Clone 测试浅拷贝</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestStudent_Clone</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	student := &amp;Student&#123;</span><br><span class="line">		Name:  <span class="string">"user1"</span>,</span><br><span class="line">		Books: []<span class="keyword">string</span>&#123;<span class="string">"三国演义"</span>,<span class="string">"红楼梦"</span>,<span class="string">"算法导论"</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	studentClone := student.Clone()</span><br><span class="line">	assert.Equal(t, student.Name, studentClone.Name)</span><br><span class="line">	assert.Equal(t, student.Books, studentClone.Books)</span><br><span class="line"></span><br><span class="line">	student.Books = <span class="built_in">append</span>(student.Books, <span class="string">"计算机网络"</span>)</span><br><span class="line">	assert.Equal(t, student.Books, studentClone.Books)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// TestStudent_DeepClone 测试深拷贝</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestStudent_DeepClone</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	student := &amp;Student&#123;</span><br><span class="line">		Name:  <span class="string">"user1"</span>,</span><br><span class="line">		Books: []<span class="keyword">string</span>&#123;<span class="string">"三国演义"</span>,<span class="string">"红楼梦"</span>,<span class="string">"算法导论"</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	studentClone := student.DeepClone()</span><br><span class="line">	assert.Equal(t, student.Name, studentClone.Name)</span><br><span class="line">	assert.Equal(t, student.Books, studentClone.Books)</span><br><span class="line"></span><br><span class="line">	student.Books = <span class="built_in">append</span>(student.Books, <span class="string">"计算机网络"</span>)</span><br><span class="line">	assert.NotEqual(t, student.Books, studentClone.Books)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2><span id="si-kao">思考</span></h2><p>通过这几种创建型模式去优化我们在项目中创建对象的代码，一方面可以提高可扩展性，另一方面也是让代码更加优雅。</p>
+<p>PS:为什么我们需要面向接口编程？比如有人问你：明明用一个struct就好了，为什么要定义一个interface?我只能说：navie!</p>
+<p>我想在开发过程中，人的思维总是被限制的，你总是无法考虑到未来会变成什么样。比如项目现在用的是mysql数据库，说不定后面就换成mongodb了。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>感谢你的打赏!<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wxpay.png">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -215,364 +328,121 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongker.github.io/2021/05/10/golang-design-model-build/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/09/algorithm-divide/" class="archive-article-date">
-  	<time datetime="2021-05-08T21:44:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-09</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/05/09/algorithm-divide/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Go数据结构与算法(04)-分治算法</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/09/algorithm-divide/">Go数据结构与算法(04)-分治算法</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">algorithm</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/27/service-kafka/" class="archive-article-date">
-  	<time datetime="2021-04-26T22:50:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/27/service-kafka/">服务化04-消息队列kafka</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">micro-service</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/26/algorithm-trie/" class="archive-article-date">
-  	<time datetime="2021-04-25T23:36:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/26/algorithm-trie/">Go数据结构与算法(03)-字典树</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">algorithm</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/24/service-etcd/" class="archive-article-date">
-  	<time datetime="2021-04-23T22:48:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-24</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/24/service-etcd/">服务化03-Etcd的服务注册与发现</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">micro-service</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/22/golang-websocket-epoll/" class="archive-article-date">
-  	<time datetime="2021-04-22T13:14:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/22/golang-websocket-epoll/">Golang(27)-websocket进阶</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/11/golang-mem/" class="archive-article-date">
-  	<time datetime="2021-04-11T15:04:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/11/golang-mem/">Golang26-内存模型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/06/kubernetes-introduce/" class="archive-article-date">
-  	<time datetime="2021-04-06T12:00:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/06/kubernetes-introduce/">kubernetes介绍与安装</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">kubernetes</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/03/31/golang-di/" class="archive-article-date">
-  	<time datetime="2021-03-31T06:13:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/03/31/golang-di/">Golang代码优化25-依赖注入</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/03/24/golang-mongodb/" class="archive-article-date">
-  	<time datetime="2021-03-24T14:04:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-24</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/03/24/golang-mongodb/">Golang24-mongodb客户端</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2021/page/2/">2</a><a class="extend next" rel="next" href="/archives/2021/page/2/">Next &raquo;</a>
-    </nav>
+  <div id="gitment-ctn"></div> 
+<link rel="stylesheet" href="https://billts.site/extra_css/gitment.css">
+<script src="https://billts.site/js/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+  id: "https://hongker.github.io/2021/05/10/golang-design-model-build/",
+  owner: 'hongker',
+  repo: 'hongker.github.io',
+  oauth: {
+    client_id: 'afc36ffcb4fc3536308b',
+    client_secret: 'cfa79583966f932f518e7dae8b450eb308fccc52',
+  },
+})
+gitment.render('gitment-ctn')
+</script>
   
 
 
@@ -596,8 +466,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

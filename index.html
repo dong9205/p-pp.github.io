@@ -176,6 +176,87 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-golang-design-model-build" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/10/golang-design-model-build/">Golang设计模式(01)-创造型模式</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/10/golang-design-model-build/" class="archive-article-date">
+  	<time datetime="2021-05-09T20:15:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍设计模式里的创造型模式，以及在go里的实现方式。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><blockquote>
+<p>在软件工程中，创建型模式是处理对象创建的设计模式，试图根据实际情况使用合适的方式创建对象。基本的对象创建方式可能会导致设计上的问题，或增加设计的复杂度。创建型模式通过以某种方式控制对象的创建来解决问题。</p>
+</blockquote>
+<p>主要的创造型模式包括：单例模式、工厂模式、抽象工厂模式、建造者模式、原型模式。下面就依次介绍这几种设计模式：</p>
+<p><img src="model.png" alt="image"></p>
+        
+          <a class="article-more-a" href="/2021/05/10/golang-design-model-build/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/10/golang-design-model-build/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-algorithm-divide" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -979,88 +1060,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/03/24/golang-mongodb/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-service-mongodb" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/22/service-mongodb/">服务化02-mongodb集群</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/22/service-mongodb/" class="archive-article-date">
-  	<time datetime="2021-03-22T14:36:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文介绍mongodb集群的相关知识。</p>
-<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>Replica Set 副本集：一个副本集就是一组 MongoDB 实例组成的集群，由一个主（Primary）服务器和多个备份（Secondary）服务器构成</p>
-<ul>
-<li>节点（master）：主节点接收所有写入操作。主节点将对其数据集所做的所有更改记录到其 oplog。</li>
-<li>副节点（secondary）：复制主节点的 oplog 并将操作应用到其数据集，如果主节点不可用，一个合格的副节点将被选为新的主节点。</li>
-<li>仲裁节点（arbiter）：负载选举，当主节点不可用，它将从副节点中选一个作为主节点。</li>
-</ul>
-        
-          <a class="article-more-a" href="/2021/03/22/service-mongodb/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">micro-service</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/22/service-mongodb/">展开全文 >></a>
         </p>
       
 
