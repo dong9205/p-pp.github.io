@@ -176,6 +176,84 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Golang代码优化01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/30/Golang代码优化01/">Golang代码优化01-错误信息</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/30/Golang代码优化01/" class="archive-article-date">
+  	<time datetime="2020-03-30T07:04:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>记录项目开发中Go写法的代码优化。</p>
+<h2 id="定制化error"><a href="#定制化error" class="headerlink" title="定制化error"></a>定制化error</h2><p>在项目开发中，我们不想直接暴露系统底层的错误，同时常规的error无法满足项目精细化的处理，我们经常会对error通过code进行分类。故定义如下:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Error </span></span><br><span class="line"><span class="keyword">type</span> Error <span class="keyword">struct</span> &#123;</span><br><span class="line">	Code    <span class="keyword">int</span>    <span class="string">`json:"code"`</span></span><br><span class="line">	Message <span class="keyword">string</span> <span class="string">`json:"message"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Error string</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	b, _ := json.Marshal(e)</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">string</span>(b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// New return error with code</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">( code <span class="keyword">int</span>, message <span class="keyword">string</span>)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Error&#123;</span><br><span class="line">		Code:    code,</span><br><span class="line">		Message: message,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Parse tries to parse a JSON string into an error. If that</span></span><br><span class="line"><span class="comment">// fails, it will set the given string as the error detail.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Parse</span><span class="params">(errStr <span class="keyword">string</span>)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	e := <span class="built_in">new</span>(Error)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := json.Unmarshal([]<span class="keyword">byte</span>(errStr), e); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		e.Code = http.StatusInternalServerError</span><br><span class="line">		e.Message = err.Error()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> e</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new</span></span><br><span class="line">err := New(<span class="number">200105001</span>, <span class="string">"something wrong"</span> )</span><br><span class="line">fmt.Println(<span class="string">"err:"</span>,err.Error())</span><br><span class="line"></span><br><span class="line"><span class="comment">// parse</span></span><br><span class="line">errParse := Parse(err.Error())</span><br><span class="line">fmt.Println(<span class="string">"err code"</span>: errParse.Code)</span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2020/03/30/Golang代码优化01/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/30/Golang代码优化01/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-高并发解决方案" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -874,11 +952,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
+                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
+                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
               </li>
             
             <div class="clearfix"></div>

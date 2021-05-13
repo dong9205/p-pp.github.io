@@ -176,6 +176,82 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-golang-mongodb" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/24/golang-mongodb/">Golang24-mongodb客户端</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/24/golang-mongodb/" class="archive-article-date">
+  	<time datetime="2021-03-24T14:04:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上一篇文章介绍了如何部署mongodb集群，本文介绍如何用mgo客户端操作mongodb。</p>
+<h2><span id="an-zhuang">安装</span></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/globalsign/mgo</span><br></pre></td></tr></table></figure>
+<h2><span id="lian-jie-mongo">连接mongo</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/globalsign/mgo"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	dialInfo := &amp;mgo.DialInfo&#123;</span><br><span class="line">		Addrs:    []<span class="keyword">string</span>&#123;<span class="string">"172.17.0.1:27017"</span>,<span class="string">"172.17.0.1:27018"</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	session ,err := mgo.DialWithInfo(dialInfo)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"connect: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(session.DatabaseNames())</span><br><span class="line">	log.Println(<span class="string">"connect success"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2><span id="cha-xun">查询</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name <span class="keyword">string</span> <span class="string">`json:"name"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Run</span><span class="params">(session *mgo.Session)</span></span>  &#123;</span><br><span class="line">	collection := session.Copy().DB(<span class="string">"demo"</span>).C(<span class="string">"user"</span>)</span><br><span class="line">	<span class="comment">// 查看总数</span></span><br><span class="line">	count, err := collection.Count()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"count: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(<span class="string">"collection count:%d\n"</span>, count)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 插入数据</span></span><br><span class="line">	<span class="keyword">if</span> err := collection.Insert(&amp;User&#123;Name: <span class="string">"bob"</span>&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"insert: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"insert success"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 查询数据</span></span><br><span class="line">	entity := <span class="built_in">new</span>(User)</span><br><span class="line">	<span class="keyword">if</span> err := collection.Find(bson.M&#123;<span class="string">"name"</span>:<span class="string">"bob"</span>&#125;).One(entity); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"Find: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(<span class="string">"find user: %s\n"</span>, entity.Name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/24/golang-mongodb/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-service-mongodb" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -987,111 +1063,6 @@
 
 
   
-    <article id="post-golang-rbac" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/25/golang-rbac/">Golang代码优化18-权限RBAC</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/25/golang-rbac/" class="archive-article-date">
-  	<time datetime="2020-04-25T10:08:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文介绍golang中RBAC(基于角色的权限控制)的使用方式</p>
-<h2><span id="shi-me-shi-rbac">什么是RBAC</span></h2><blockquote>
-<p>RBAC  是基于角色的访问控制（Role-Based Access Control ）在 RBAC  中，权限与角色相关联，用户通过成为适当角色的成员而得到这些角色的权限。这就极大地简化了权限的管理。这样管理都是层级相互依赖的，权限赋予给角色，而把角色又赋予用户，这样的权限设计很清楚，管理起来很方便。</p>
-</blockquote>
-<h2><span id="shi-xian">实现</span></h2><p>我选用的是<code>github.com/casbin/casbin</code>,选择原因:社区的认同(Star很高)。</p>
-<h3><span id="an-zhuang">安装</span></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/casbin/casbin</span><br></pre></td></tr></table></figure>
-<h3><span id="ding-yi-mo-xing">定义模型</span></h3><ul>
-<li><p>conf/rbac_model.conf</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[request_definition]</span><br><span class="line">r = sub, obj, act</span><br><span class="line"></span><br><span class="line">[policy_definition]</span><br><span class="line">p = sub, obj, act</span><br><span class="line"></span><br><span class="line">[role_definition]</span><br><span class="line">g = _, _</span><br><span class="line"></span><br><span class="line">[policy_effect]</span><br><span class="line">e = some(where (p.eft == allow))</span><br><span class="line"></span><br><span class="line">[matchers]</span><br><span class="line">m = r.sub == p.sub &amp;&amp; keyMatch(r.obj, p.obj) &amp;&amp; (r.act == p.act || p.act == &quot;*&quot;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>conf/policy.csv<br>权限细则，可以读csv文件，可以读数据库。。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">p, admin, /*, *</span><br><span class="line">p, anonymous, /article, GET</span><br><span class="line">p, anonymous, /article/*, GET</span><br><span class="line">p, member, /permission, GET</span><br><span class="line">p, member, /article, GET</span><br><span class="line">p, member, /article/*, *</span><br><span class="line">g, test01, anonymous</span><br><span class="line">g, user01, member</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>说明：</p>
-<ul>
-<li>line 1: 定义admin角色能访问所有资源</li>
-<li>line 2,3: 定义anonymous角色能查看文章列表、文章详情</li>
-<li>line 4: 定义member角色能获取权限</li>
-<li>line 5,6: 定义member角色能访问文章所有权限</li>
-<li>line 7: 定义test01的角色为anonymous</li>
-<li>line 8: 定义user01的角色为member</li>
-</ul>
-<h3><span id="ding-yi-zhong-jian-jian">定义中间件</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// enforcer.go</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/casbin/casbin"</span></span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> enforcer *casbin.Enforcer</span><br><span class="line"></span><br><span class="line"><span class="comment">// init 初始化</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	authEnforcer, err := casbin.NewEnforcerSafe(<span class="string">"conf/rbac_model.conf"</span>, <span class="string">"conf/policy.csv"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatal(err)</span><br><span class="line">	&#125;</span><br><span class="line">	enforcer = authEnforcer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// GetPermissionsByUser 获取用户权限，用于前端展示</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetPermissionsByUser</span><span class="params">(username <span class="keyword">string</span>)</span> [][]<span class="title">string</span></span>  &#123;</span><br><span class="line">	<span class="keyword">return</span> enforcer.GetImplicitPermissionsForUser(username)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// CheckPermission 权限校验中间件</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CheckPermission</span><span class="params">(ctx *gin.Context)</span></span>  &#123;</span><br><span class="line">    <span class="comment">// 获取角色，一般不会通过参数传递角色，而是根据用户当前的token解析得到用户的角色</span></span><br><span class="line">    <span class="comment">// 这里为了演示而简单处理</span></span><br><span class="line">	role := ctx.Query(<span class="string">"role"</span>)</span><br><span class="line">	<span class="keyword">if</span> role == <span class="string">""</span> &#123;</span><br><span class="line">		role = <span class="string">"anonymous"</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据角色,路由，请求方法校验权限</span></span><br><span class="line">	hasPermission, err := enforcer.EnforceSafe(role, ctx.Request.URL.Path, ctx.Request.Method)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 程序异常</span></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		ctx.String(http.StatusInternalServerError, err.Error())</span><br><span class="line">		ctx.Abort()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 没有权限</span></span><br><span class="line">	<span class="keyword">if</span> !hasPermission &#123;</span><br><span class="line">		ctx.String(http.StatusUnauthorized, <span class="string">"StatusUnauthorized"</span>)</span><br><span class="line">		ctx.Abort()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ctx.Next()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3><span id="web-fu-wu">web服务</span></h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	router := gin.Default()</span><br><span class="line">    <span class="comment">// 使用中间件</span></span><br><span class="line">    router.Use(CheckPermission)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 根据用户</span></span><br><span class="line">	router.GET(<span class="string">"permission"</span>, <span class="function"><span class="keyword">func</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">		context.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">			<span class="string">"data"</span>: GetPermissionsByUser(context.Query(<span class="string">"user"</span>)),</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一组文章的接口</span></span><br><span class="line">	article := router.Group(<span class="string">"article"</span>)</span><br><span class="line">	&#123;</span><br><span class="line">        <span class="comment">// 列表查询</span></span><br><span class="line">		article.GET(<span class="string">""</span>, <span class="function"><span class="keyword">func</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">			context.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">				<span class="string">"data"</span>: <span class="string">"paginate"</span>,</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 查看详情</span></span><br><span class="line">		article.GET(<span class="string">"/:id"</span>, <span class="function"><span class="keyword">func</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">			context.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">				<span class="string">"data"</span>: <span class="string">"info:"</span> + context.Param(<span class="string">"id"</span>),</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更新</span></span><br><span class="line">		article.PUT(<span class="string">"/:id"</span>, <span class="function"><span class="keyword">func</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">			context.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">				<span class="string">"data"</span>: <span class="string">"update"</span>+ context.Param(<span class="string">"id"</span>),</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建</span></span><br><span class="line">		article.POST(<span class="string">""</span>, <span class="function"><span class="keyword">func</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">			context.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">				<span class="string">"data"</span>: <span class="string">"create"</span>,</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 删除</span></span><br><span class="line">		article.DELETE(<span class="string">"/:id"</span>, <span class="function"><span class="keyword">func</span><span class="params">(context *gin.Context)</span></span> &#123;</span><br><span class="line">			context.JSON(http.StatusOK, gin.H&#123;</span><br><span class="line">				<span class="string">"data"</span>: <span class="string">"delete"</span>+ context.Param(<span class="string">"id"</span>),</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	router.Run(<span class="string">":8888"</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="ce-shi">测试</span></h2><ul>
-<li><p>启动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run mian.go</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>测试</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">curl localhost:8888/article</span><br><span class="line">// output: &#123;&quot;data&quot;:&quot;paginate&quot;&#125;</span><br><span class="line">curl localhost:8888/article/1</span><br><span class="line">// output: &#123;&quot;data&quot;:&quot;info:1&quot;&#125;</span><br><span class="line">curl localhost:8888/permission</span><br><span class="line">// output: StatusUnauthorized</span><br><span class="line">curl localhost:8888/permission?role=member&amp;user=user01</span><br><span class="line">// output: &#123;&quot;data&quot;:[[&quot;member&quot;,&quot;/permission&quot;,&quot;GET&quot;],[&quot;member&quot;,&quot;/article&quot;,&quot;GET&quot;],[&quot;member&quot;,&quot;/article/*&quot;,&quot;*&quot;]]&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/25/golang-rbac/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1213,11 +1184,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
+                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
+                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
               </li>
             
             <div class="clearfix"></div>

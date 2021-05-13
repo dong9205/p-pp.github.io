@@ -176,6 +176,95 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-golang-validator" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/01/golang-validator/">Golang优化代码11-数据校验</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/01/golang-validator/" class="archive-article-date">
+  	<time datetime="2020-04-01T13:50:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍<code>github.com/go-playground/validator/v10</code>的用法。</p>
+<h2 id="验证器"><a href="#验证器" class="headerlink" title="验证器"></a>验证器</h2><blockquote>
+<p>在项目中经常对客户端发起的接口请求参数进行校验，通常开发者必须自己编写一套验证的规则，但是使用统一的数据验证器能减轻开发者的负担，以及简化代码。<br>程序员并不是偷懒，而是提高自己的效率。</p>
+</blockquote>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/go-playground/validator/v10</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><ul>
+<li>required 必填项<br>对于请求参数来说，使用的最多的就是必填项。数字0,空string、slices,map,pointer,interface,channel,function都会校验不通过。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/go-playground/validator/v10"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化验证器</span></span><br><span class="line"><span class="keyword">var</span> validate = validator.New()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> err error <span class="comment">// 空interface</span></span><br><span class="line">	<span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span> <span class="comment">// 空map</span></span><br><span class="line">	<span class="keyword">var</span> ch <span class="keyword">chan</span> <span class="keyword">int</span> <span class="comment">// 空channel</span></span><br><span class="line">	<span class="keyword">var</span> s []<span class="keyword">int</span> <span class="comment">// 空slice</span></span><br><span class="line">	<span class="keyword">var</span> p *log.Logger <span class="comment">// 空pointer</span></span><br><span class="line">	<span class="keyword">var</span> f <span class="function"><span class="keyword">func</span><span class="params">()</span> // 空<span class="title">func</span></span></span><br><span class="line">	items := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;</span><br><span class="line">		<span class="string">"zero"</span>: <span class="number">0</span>, <span class="comment">// 改成非0会输出nil，说明通过校验，没有错误</span></span><br><span class="line">		<span class="string">"string"</span>:<span class="string">""</span>,</span><br><span class="line">		<span class="string">"slice"</span>: s,</span><br><span class="line">		<span class="string">"map"</span>: m,</span><br><span class="line">		<span class="string">"pointer"</span> : p,</span><br><span class="line">		<span class="string">"interface"</span>: err,</span><br><span class="line">		<span class="string">"channel"</span> : ch,</span><br><span class="line">		<span class="string">"function"</span>: f,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> idx, val := <span class="keyword">range</span> items &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"%s:%v\n"</span>, idx, validate.Var(val, <span class="string">"required"</span>))</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>输出错误信息，说明校验都未通过:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">zero:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">string:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">slice:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">map:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">pointer:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">interface:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br><span class="line">channel:Key: &apos;&apos; Error:Field validation for &apos;&apos; failed on the &apos;required&apos; tag</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>其他校验<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 验证邮箱格式</span></span><br><span class="line">	fmt.Println(<span class="string">"ValidateEmail:"</span>,validate.Var(<span class="string">"123456.qq.com"</span>, <span class="string">"required,email"</span>)) <span class="comment">// failed</span></span><br><span class="line">	fmt.Println(<span class="string">"ValidateEmail:"</span>,validate.Var(<span class="string">"123456@qq.com"</span>, <span class="string">"required,email"</span>)) <span class="comment">// success</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 校验数字范围,gt:大于,gte:大于等于,lt:小于,lte:小于等于</span></span><br><span class="line">	fmt.Println(<span class="string">"ValidateNumber:"</span>, validate.Var(<span class="number">100</span>, <span class="string">"required,gt=100,lt=120"</span>)) <span class="comment">// failed</span></span><br><span class="line">	fmt.Println(<span class="string">"ValidateNumber:"</span>, validate.Var(<span class="number">110</span>, <span class="string">"required,gte=100,lte=120"</span>)) <span class="comment">// success</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+        
+          <a class="article-more-a" href="/2020/04/01/golang-validator/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/01/golang-validator/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-golang-gin" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -962,84 +1051,6 @@
 
 
   
-    <article id="post-Golang代码优化01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/30/Golang代码优化01/">Golang代码优化01-错误信息</a>
-    </h1>
-  
-
-        
-        <a href="/2020/03/30/Golang代码优化01/" class="archive-article-date">
-  	<time datetime="2020-03-30T07:04:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>记录项目开发中Go写法的代码优化。</p>
-<h2 id="定制化error"><a href="#定制化error" class="headerlink" title="定制化error"></a>定制化error</h2><p>在项目开发中，我们不想直接暴露系统底层的错误，同时常规的error无法满足项目精细化的处理，我们经常会对error通过code进行分类。故定义如下:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Error </span></span><br><span class="line"><span class="keyword">type</span> Error <span class="keyword">struct</span> &#123;</span><br><span class="line">	Code    <span class="keyword">int</span>    <span class="string">`json:"code"`</span></span><br><span class="line">	Message <span class="keyword">string</span> <span class="string">`json:"message"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Error string</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	b, _ := json.Marshal(e)</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">string</span>(b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// New return error with code</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">( code <span class="keyword">int</span>, message <span class="keyword">string</span>)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Error&#123;</span><br><span class="line">		Code:    code,</span><br><span class="line">		Message: message,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Parse tries to parse a JSON string into an error. If that</span></span><br><span class="line"><span class="comment">// fails, it will set the given string as the error detail.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Parse</span><span class="params">(errStr <span class="keyword">string</span>)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	e := <span class="built_in">new</span>(Error)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := json.Unmarshal([]<span class="keyword">byte</span>(errStr), e); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		e.Code = http.StatusInternalServerError</span><br><span class="line">		e.Message = err.Error()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> e</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new</span></span><br><span class="line">err := New(<span class="number">200105001</span>, <span class="string">"something wrong"</span> )</span><br><span class="line">fmt.Println(<span class="string">"err:"</span>,err.Error())</span><br><span class="line"></span><br><span class="line"><span class="comment">// parse</span></span><br><span class="line">errParse := Parse(err.Error())</span><br><span class="line">fmt.Println(<span class="string">"err code"</span>: errParse.Code)</span><br></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2020/03/30/Golang代码优化01/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/30/Golang代码优化01/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -1161,11 +1172,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
+                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
+                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
               </li>
             
             <div class="clearfix"></div>

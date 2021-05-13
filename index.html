@@ -176,6 +176,107 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-golang-design-model-structure-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/14/golang-design-model-structure-01/">Golang设计模式(02)-结构型模式(上)</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/14/golang-design-model-structure-01/" class="archive-article-date">
+  	<time datetime="2021-05-13T22:17:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前面介绍了设计模式中的建造型模式，这篇介绍结构型模式的一部分。主要是适配器模式、装饰器模式、代理模式的设计说明</p>
+<h2><span id="ding-yi">定义</span></h2><blockquote>
+<p>描述将类和对象结合在一起，形成一个更强大的结构。</p>
+</blockquote>
+<h2><span id="fen-lei">分类</span></h2><ul>
+<li>类结构型模式：关心类的组合，由多个类组成一个更大的系统，一般只存在继承和实现关系。</li>
+<li>对象结构性模式：关于类和对象的组合，通过关联关系使得在一个类中定义另一个类的实例对象，然后通过该对象调用其方法。</li>
+</ul>
+<h3><span id="gua-pei-qi-mo-shi">适配器模式</span></h3><p>将不兼容类的接口转换成客户端所期待的接口，从而使得原本不匹配的接口可以一起工作。</p>
+<ul>
+<li>实现<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Target 客户端期待调用的接口</span></span><br><span class="line"><span class="keyword">type</span> Target <span class="keyword">interface</span> &#123;</span><br><span class="line">	Request()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Source 源类,未实现Target接口</span></span><br><span class="line"><span class="keyword">type</span> Source <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="comment">// DoSomething 业务逻辑</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(Source)</span> <span class="title">DoSomething</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"do something"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Adapter 适配器，当客户端需要调用Target接口且Source类未能实现该接口</span></span><br><span class="line"><span class="comment">// Adapter就来代替Source类实现Target接口，达到适配的目的</span></span><br><span class="line"><span class="keyword">type</span> Adapter <span class="keyword">struct</span> &#123;</span><br><span class="line">	source Source</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(adapter Adapter)</span> <span class="title">Request</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	adapter.DoSomething()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// NewTarget 获取Target实例</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTarget</span><span class="params">()</span> <span class="title">Target</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &amp;Adapter&#123;source: Source&#123;&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Client 调用类</span></span><br><span class="line"><span class="keyword">type</span> Client <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(client *Client)</span> <span class="title">Invoke</span><span class="params">()</span></span> &#123;</span><br><span class="line">	target := NewTarget()</span><br><span class="line">	target.Request()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3><span id="zhuang-shi-qi-mo-shi">装饰器模式</span></h3><p>允许向现有的对象添加新的功能，同时不改变其结构。</p>
+<ul>
+<li>实现<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component 组件接口</span></span><br><span class="line"><span class="keyword">type</span> Component <span class="keyword">interface</span> &#123;</span><br><span class="line">	DoSomething()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ConcreteComponent component接口的实现</span></span><br><span class="line"><span class="keyword">type</span> ConcreteComponent <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(component ConcreteComponent)</span> <span class="title">DoSomething</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"do something"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Decorator component的装饰类</span></span><br><span class="line"><span class="keyword">type</span> Decorator <span class="keyword">struct</span> &#123;</span><br><span class="line">	component Component</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(decorator Decorator)</span> <span class="title">DoSomething</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 对其添加扩展功能</span></span><br><span class="line">	fmt.Println(<span class="string">"do some decorator"</span>)</span><br><span class="line">	decorator.component.DoSomething()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewComponentDecorator</span><span class="params">(component Component)</span> <span class="title">Component</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Decorator&#123;component: component&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Client 调用类</span></span><br><span class="line"><span class="keyword">type</span> Client <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(client Client)</span> <span class="title">Invoke</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 某个component对象</span></span><br><span class="line">    component := <span class="built_in">new</span>(ConcreteComponent)</span><br><span class="line">    <span class="comment">// 根据对象生成装饰类</span></span><br><span class="line">    componentDecorator := NewComponentDecorator(component)</span><br><span class="line">    <span class="comment">// 运行装饰类方法</span></span><br><span class="line">    componentDecorator.DoSomething()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3><span id="dai-li-mo-shi">代理模式</span></h3><p>提供一种以代理的方式来控制某个对象的访问。</p>
+<ul>
+<li>实现<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Subject 抽象类</span></span><br><span class="line"><span class="keyword">type</span> Subject <span class="keyword">interface</span> &#123;</span><br><span class="line">	Do()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// RealSubject 具体实现</span></span><br><span class="line"><span class="keyword">type</span> RealSubject <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(impl RealSubject)</span> <span class="title">Do</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">"do something"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SubjectProxy 静态代理类</span></span><br><span class="line"><span class="keyword">type</span> SubjectProxy <span class="keyword">struct</span> &#123;</span><br><span class="line">	subject RealSubject</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Do 也实现了Subject接口</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(proxy SubjectProxy)</span> <span class="title">Do</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 前置触发,一般会是一些条件控制什么的</span></span><br><span class="line">	fmt.Println(<span class="string">"proxy before"</span>)</span><br><span class="line">    proxy.subject.Do()</span><br><span class="line">    <span class="comment">// 后置触发</span></span><br><span class="line">	fmt.Println(<span class="string">"proxy after"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewProxySubject</span><span class="params">()</span> <span class="title">Subject</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">new</span>(SubjectProxy)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Client 调用类</span></span><br><span class="line"><span class="keyword">type</span> Client <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(client *Client)</span> <span class="title">Invoke</span><span class="params">()</span></span> &#123;</span><br><span class="line">    subject := NewProxySubject()</span><br><span class="line">    subject.Do()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>关于代理模式与装饰器模式的区别：</p>
+<ul>
+<li>装饰模式：强调运行阶段增加目标对象的行为。被装饰对象是经过参数传递给装饰类。</li>
+<li>代理模式：强调控制对象的访问,并不改变对象的行为。被代理对象是在代理初始化的时候创建(静态代理)。</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/14/golang-design-model-structure-01/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-golang-design-model-build" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1012,82 +1113,6 @@
 
 
   
-    <article id="post-golang-mongodb" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/24/golang-mongodb/">Golang24-mongodb客户端</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/24/golang-mongodb/" class="archive-article-date">
-  	<time datetime="2021-03-24T14:04:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上一篇文章介绍了如何部署mongodb集群，本文介绍如何用mgo客户端操作mongodb。</p>
-<h2><span id="an-zhuang">安装</span></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/globalsign/mgo</span><br></pre></td></tr></table></figure>
-<h2><span id="lian-jie-mongo">连接mongo</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"github.com/globalsign/mgo"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	dialInfo := &amp;mgo.DialInfo&#123;</span><br><span class="line">		Addrs:    []<span class="keyword">string</span>&#123;<span class="string">"172.17.0.1:27017"</span>,<span class="string">"172.17.0.1:27018"</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	session ,err := mgo.DialWithInfo(dialInfo)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"connect: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(session.DatabaseNames())</span><br><span class="line">	log.Println(<span class="string">"connect success"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2><span id="cha-xun">查询</span></h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name <span class="keyword">string</span> <span class="string">`json:"name"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Run</span><span class="params">(session *mgo.Session)</span></span>  &#123;</span><br><span class="line">	collection := session.Copy().DB(<span class="string">"demo"</span>).C(<span class="string">"user"</span>)</span><br><span class="line">	<span class="comment">// 查看总数</span></span><br><span class="line">	count, err := collection.Count()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"count: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(<span class="string">"collection count:%d\n"</span>, count)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 插入数据</span></span><br><span class="line">	<span class="keyword">if</span> err := collection.Insert(&amp;User&#123;Name: <span class="string">"bob"</span>&#125;); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"insert: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(<span class="string">"insert success"</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 查询数据</span></span><br><span class="line">	entity := <span class="built_in">new</span>(User)</span><br><span class="line">	<span class="keyword">if</span> err := collection.Find(bson.M&#123;<span class="string">"name"</span>:<span class="string">"bob"</span>&#125;).One(entity); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"Find: %v\n"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	log.Printf(<span class="string">"find user: %s\n"</span>, entity.Name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/24/golang-mongodb/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1209,11 +1234,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
+                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">微服务</a>
+                <a href="javascript:void(0)" class="js-tag color5">系统架构</a>
               </li>
             
             <div class="clearfix"></div>
